@@ -1,0 +1,22 @@
+{
+  "is_template": true,
+  "assets": [
+    {
+      "id": "asset-01",
+      "kind": "procedural_3d",
+      "path": "REPLACE_WITH_REAL_RUN_RELATIVE_PATH",
+      "rights": "REPLACE_WITH_VERIFIED_RIGHTS",
+      "source_url": null,
+      "license_url": null,
+      "creator": "REPLACE",
+      "generation_job_key": null,
+      "provider_job_id": null,
+      "version": "1",
+      "character_or_prop_id": "REPLACE",
+      "used_in_shots": [],
+      "scale_and_materials": {},
+      "render_proof_path": "REPLACE",
+      "modifications": []
+    }
+  ]
+}

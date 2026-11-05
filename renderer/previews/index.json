@@ -1,0 +1,83 @@
+{
+  "kind": "actual-remotion-threejs-stills",
+  "demo": true,
+  "scale": 0.5,
+  "fps": 30,
+  "inspected": true,
+  "scope": "Representative stills; no complete movie/audio validation.",
+  "frames": [
+    {
+      "frame": 148,
+      "path": "previews/portrait/StoryShort-00148.png",
+      "width": 540,
+      "height": 960,
+      "sha256": "dc09f0f51a85cb8bbcdb24851ab8fa571a8d254da994cacb2ccefe9a56cf8e5f"
+    },
+    {
+      "frame": 478,
+      "path": "previews/portrait/StoryShort-00478.png",
+      "width": 540,
+      "height": 960,
+      "sha256": "210b3509e8ab843d86849c3fdf09cf25df7f1653db07017cc1ed04b4d8f6087c"
+    },
+    {
+      "frame": 808,
+      "path": "previews/portrait/StoryShort-00808.png",
+      "width": 540,
+      "height": 960,
+      "sha256": "db708dc27f45c6819afae1fa48e5800f598dede32f8af75d9aba8f3ec2bb9867"
+    },
+    {
+      "frame": 1152,
+      "path": "previews/portrait/StoryShort-01152.png",
+      "width": 540,
+      "height": 960,
+      "sha256": "52641fb673b9c5abf3009363a84f0dc09d4fa99b63b56cc05ae85e1af704fc83"
+    },
+    {
+      "frame": 148,
+      "path": "previews/landscape/StoryLong-00148.png",
+      "width": 960,
+      "height": 540,
+      "sha256": "b2e19b29529de502c8157108a89b18620df6381b18152ddba61f265c94a30b7c"
+    },
+    {
+      "frame": 478,
+      "path": "previews/landscape/StoryLong-00478.png",
+      "width": 960,
+      "height": 540,
+      "sha256": "766afda2b3266bfccb8fb327bd65d88c6a1a7496a845aeea1c422afe27339225"
+    },
+    {
+      "frame": 808,
+      "path": "previews/landscape/StoryLong-00808.png",
+      "width": 960,
+      "height": 540,
+      "sha256": "bca28d82026c14e8fbba973ba8cbd429fe7cfdcc6aacf1e20e53fe051d5a369d"
+    },
+    {
+      "frame": 1152,
+      "path": "previews/landscape/StoryLong-01152.png",
+      "width": 960,
+      "height": 540,
+      "sha256": "edc8fb3858422202512ccc1920653edd270eb896af335f9127567ee8d5f78711"
+    }
+  ],
+  "source_sha256": {
+    "src/Fonts.tsx": "d9d0b5075eb099ff431e09d4d3816637bc46d773e309fe8f63e585fc5aa923d4",
+    "src/Root.tsx": "707b592d6303022e1d548b618b1c5ec2fa2f26ba65158c5c5c7f65b4c1000348",
+    "src/StoryVideo.tsx": "90a8d6e6a2c432e15ffd246428f6eaba778986742ff34a2ac25684e8581a23d1",
+    "src/demo.ts": "adda4312365a522647299437bf5e95efe3f8f0108403608b6cfda30762f8ad6d",
+    "src/index.ts": "5462d3268136731ce43bfd7c5072ea1ba48b51fec94fa30076f5044f4b39e4a2",
+    "src/scene/Diorama.tsx": "52f4aa5c6c66149b776e15becd5f3a25ccbbd58f014f9a45c22acd88e9389800",
+    "src/scene/Environments.tsx": "37c2bc79a0cf447bcde2d8669b0931045dc16902e112156ad9aa571c5ff01a47",
+    "src/scene/Primitives.tsx": "8133054a4d132cf61cf147af38d2cf89bcbcbf9c3cc6fdc5f55e51cae15fe4bd",
+    "src/styles.ts": "d155f709c93a0d406fb0f14d0d84739b03191465cedc44da54850a343fc42dc4",
+    "src/types.ts": "b27ab91c78ce9133eb632132f43d901c4aa0167172e14d308e6ddfe66e9a7818",
+    "src/validate.mjs": "b7a8887df2c75498ff2e9e727bee2312de0e76aad822d033b24a50170bc0d297"
+  },
+  "props_sha256": {
+    "examples/demo-short.json": "bec8969337d8875a7d3891f35351b9f177591425b1bbc658cf72f51f2c8eafe8",
+    "examples/demo-long.json": "d568fe4f8baa515f558b561d7ac1abaef92e4df0ffda12045c470da7647c14d5"
+  }
+}

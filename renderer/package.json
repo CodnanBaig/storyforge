@@ -1,0 +1,33 @@
+{
+  "name": "@storyforge/renderer",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Deterministic local Remotion + Three.js video renderer for StoryForge",
+  "scripts": {
+    "studio": "remotion studio --no-open",
+    "typecheck": "tsc --noEmit",
+    "bundle": "remotion bundle src/index.ts",
+    "stills": "node scripts/render-stills.mjs",
+    "validate": "node scripts/validate-plan.mjs",
+    "render": "node scripts/render-video.mjs"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.541",
+    "@remotion/renderer": "4.0.541",
+    "@remotion/bundler": "4.0.541",
+    "@remotion/media": "4.0.541",
+    "@remotion/three": "4.0.541",
+    "@react-three/fiber": "9.3.0",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "remotion": "4.0.541",
+    "three": "0.180.0"
+  },
+  "devDependencies": {
+    "@types/react": "19.1.16",
+    "@types/react-dom": "19.1.9",
+    "@types/three": "0.180.0",
+    "typescript": "5.9.3"
+  },
+  "engines": {"node": ">=22"}
+}

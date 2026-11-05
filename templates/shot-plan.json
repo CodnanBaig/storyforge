@@ -1,0 +1,26 @@
+{
+  "is_template": true,
+  "target_duration_seconds": 45,
+  "shots": [
+    {
+      "id": "shot-01",
+      "start_seconds": 0,
+      "duration_seconds": 5,
+      "purpose": "REPLACE_WITH_NARRATIVE_FUNCTION",
+      "action": "REPLACE_WITH_VISIBLE_CHANGE",
+      "camera": "REPLACE_WITH_FRAMING_AND_MOVEMENT",
+      "environment": "REPLACE",
+      "character_ids": [],
+      "prop_ids": [],
+      "claim_ids": [],
+      "on_screen_text": "",
+      "narration_excerpt": "",
+      "sound_cues": [],
+      "continuity_in": "",
+      "continuity_out": "",
+      "implementation": "REPLACE_WITH_BUILDABLE_TECHNIQUE",
+      "complexity_risk": "REPLACE"
+    }
+  ],
+  "note": "Extend the shot list until it covers the exact target. This partial template will fail timing validation."
+}

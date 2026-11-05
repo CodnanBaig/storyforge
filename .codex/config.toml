@@ -1,0 +1,5 @@
+# Current standalone custom-agent format, verified against official docs
+# on 2026-11-06. Models, credentials, permissions and MCP servers are inherited.
+[agents]
+enabled = true
+max_concurrent_threads_per_session = 3

@@ -1,0 +1,21 @@
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+node_modules/
+renderer/out/
+renderer/dist/
+renderer/build/
+runs/
+.env
+.env.*
+!.env.example
+.DS_Store
+*.sqlite3*
+
+
+# Internal build coordination and local credentials
+BUILD_CONTRACT.md
+*.pem
+*.key
+credentials*.json

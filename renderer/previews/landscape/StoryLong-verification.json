@@ -1,0 +1,35 @@
+{
+  "project_id": "silent-technical-demo",
+  "demo": true,
+  "kind": "actual-remotion-stills",
+  "frames": [
+    {
+      "frame": 148,
+      "path": "previews/landscape/StoryLong-00148.png",
+      "width": 960,
+      "height": 540,
+      "sha256": "b2e19b29529de502c8157108a89b18620df6381b18152ddba61f265c94a30b7c"
+    },
+    {
+      "frame": 478,
+      "path": "previews/landscape/StoryLong-00478.png",
+      "width": 960,
+      "height": 540,
+      "sha256": "766afda2b3266bfccb8fb327bd65d88c6a1a7496a845aeea1c422afe27339225"
+    },
+    {
+      "frame": 808,
+      "path": "previews/landscape/StoryLong-00808.png",
+      "width": 960,
+      "height": 540,
+      "sha256": "bca28d82026c14e8fbba973ba8cbd429fe7cfdcc6aacf1e20e53fe051d5a369d"
+    },
+    {
+      "frame": 1152,
+      "path": "previews/landscape/StoryLong-01152.png",
+      "width": 960,
+      "height": 540,
+      "sha256": "edc8fb3858422202512ccc1920653edd270eb896af335f9127567ee8d5f78711"
+    }
+  ]
+}

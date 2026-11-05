@@ -1,0 +1,14 @@
+{
+  "is_template": true,
+  "channel_id": "REPLACE",
+  "audience": "REPLACE",
+  "language": "English",
+  "niches": [],
+  "excluded_topics": [],
+  "hook": {"mode": "family", "prefix": "", "examples": []},
+  "style_bible_path": "REPLACE",
+  "voice": {"provider": "REPLACE", "voice_id": "", "model_id": "", "pronunciation_dictionary": []},
+  "recent_episode_ids": [],
+  "analytics_baseline_path": null,
+  "notes": "Reusable preferences. Each episode still needs a validated brief and its own evidence."
+}

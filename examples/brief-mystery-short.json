@@ -1,0 +1,59 @@
+{
+  "schema_version": "1.0",
+  "project_name": "First production",
+  "niche": "Documented mysteries and unusual events",
+  "content_kind": "documentary",
+  "mode": "short",
+  "duration_seconds": 45,
+  "format": "9:16",
+  "fps": 30,
+  "audience": "English-speaking curious adults",
+  "language": "English",
+  "tone": "Curious, cinematic, clear; atmospheric without sensational claims",
+  "references": [],
+  "hook": {
+    "mode": "family",
+    "prefix": "",
+    "max_seconds": 3,
+    "guidance": "Open with the story's specific surprising fact, image, or unresolved question; earn the payoff."
+  },
+  "style": {
+    "preset": "midnight-dossier",
+    "status": "provisional",
+    "font": "DejaVu Sans and DejaVu Serif (bundled)",
+    "character_style": "Simple procedural human silhouettes, stable proportions and costume IDs",
+    "reference_interpretation": "Use references for visual direction; verify rights before copying actual assets."
+  },
+  "voice": {
+    "provider": "external",
+    "required": true,
+    "voice_id": "",
+    "model_id": "",
+    "direction": "Warm, grounded, expressive narration; natural pauses; no presenter on camera"
+  },
+  "research": {
+    "min_sources": 2,
+    "min_independent_sources": 2,
+    "freshness_days": 14,
+    "region": "global",
+    "analytics_file": null
+  },
+  "budget": {
+    "max_model_calls": 40,
+    "max_media_jobs": 12,
+    "max_media_cost_usd": 0,
+    "max_media_credits": 0,
+    "max_retries_per_task": 2
+  },
+  "release": {
+    "intent": "private_preview",
+    "auto_publish": false
+  },
+  "constraints": {
+    "no_presenter": true,
+    "graphic_violence": false,
+    "assets_first": "procedural",
+    "music": "Original or specifically licensed; optional when silence serves the story",
+    "reference_notes": "No references supplied; use provisional style for initial blocking."
+  }
+}

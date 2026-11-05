@@ -1,0 +1,20 @@
+{
+  "is_template": true,
+  "id": "REPLACE",
+  "reference_interpretations": [],
+  "palette": {"background": "#08131D", "primary": "#49CCBB", "accent": "#E5B56E", "text": "#F3F0E8"},
+  "font": "REPLACE_WITH_APPROVED_AND_AVAILABLE_FONT",
+  "type_scale": {"portrait_headline": 80, "portrait_caption": 56, "landscape_headline": 64, "landscape_caption": 42},
+  "characters": [
+    {"id": "participant-01", "role": "Story participant, never presenter", "silhouette": "REPLACE", "proportions": {}, "costume": {}, "accessories": [], "scale": 1, "reference_paths": []}
+  ],
+  "asset_rules": ["Use stable IDs and proportions", "Record rights for every imported asset", "Inspect actual rendered proof"],
+  "lighting": "REPLACE",
+  "camera_language": "REPLACE",
+  "movement_rules": "Frame-derived motion with deterministic seeds",
+  "caption_rules": "REPLACE_WITH_SAFE_ZONES_AND_LINE_LIMITS",
+  "prohibited_treatments": [],
+  "render_proof_paths": [],
+  "known_approximations": [],
+  "font_and_asset_rights": []
+}

@@ -1,0 +1,241 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://storyforge.local/schemas/brief.schema.json",
+  "title": "StoryForge Production Brief",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "project_name",
+    "niche",
+    "content_kind",
+    "mode",
+    "duration_seconds",
+    "format",
+    "fps",
+    "audience",
+    "language",
+    "references",
+    "hook",
+    "style",
+    "voice",
+    "research",
+    "budget",
+    "release",
+    "constraints"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "project_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "niche": {
+      "type": "string",
+      "minLength": 1
+    },
+    "content_kind": {
+      "enum": [
+        "documentary",
+        "fiction",
+        "commentary"
+      ]
+    },
+    "mode": {
+      "enum": [
+        "short",
+        "long"
+      ]
+    },
+    "duration_seconds": {
+      "type": "number",
+      "minimum": 5,
+      "maximum": 7200
+    },
+    "format": {
+      "enum": [
+        "9:16",
+        "16:9",
+        "1:1"
+      ]
+    },
+    "fps": {
+      "enum": [
+        24,
+        25,
+        30,
+        50,
+        60
+      ]
+    },
+    "audience": {
+      "type": "string",
+      "minLength": 1
+    },
+    "language": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tone": {
+      "type": "string",
+      "minLength": 1
+    },
+    "references": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "location",
+          "notes"
+        ],
+        "properties": {
+          "location": {
+            "type": "string",
+            "minLength": 1
+          },
+          "notes": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "hook": {
+      "type": "object",
+      "required": [
+        "mode",
+        "max_seconds"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "fixed",
+            "family",
+            "topic"
+          ]
+        },
+        "prefix": {
+          "type": "string"
+        },
+        "max_seconds": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 15
+        },
+        "guidance": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "mode": {
+                "const": "fixed"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "prefix"
+            ],
+            "properties": {
+              "prefix": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "style": {
+      "type": "object"
+    },
+    "voice": {
+      "type": "object"
+    },
+    "research": {
+      "type": "object",
+      "required": [
+        "min_sources",
+        "min_independent_sources",
+        "freshness_days"
+      ],
+      "properties": {
+        "min_sources": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "min_independent_sources": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "freshness_days": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "budget": {
+      "type": "object",
+      "required": [
+        "max_model_calls",
+        "max_media_jobs",
+        "max_media_cost_usd",
+        "max_media_credits",
+        "max_retries_per_task"
+      ],
+      "properties": {
+        "max_model_calls": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000,
+          "description": "Worker process invocations, not provider-internal LLM turns"
+        },
+        "max_media_jobs": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 500
+        },
+        "max_retries_per_task": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "max_media_cost_usd": {
+          "type": "number",
+          "minimum": 0
+        },
+        "max_media_credits": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "release": {
+      "type": "object",
+      "required": [
+        "intent"
+      ],
+      "properties": {
+        "intent": {
+          "enum": [
+            "private_preview",
+            "commercial"
+          ]
+        },
+        "auto_publish": {
+          "const": false
+        }
+      }
+    },
+    "constraints": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": true
+}

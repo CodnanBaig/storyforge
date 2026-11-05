@@ -1,0 +1,9 @@
+{
+  "is_template": true,
+  "sources": [
+    {"id": "source-01", "url": "REPLACE_WITH_ACTUAL_URL", "title": "REPLACE", "publisher": "REPLACE", "author": "REPLACE", "accessed_at": "REPLACE_WITH_ISO_TIMESTAMP", "publication_date": "REPLACE", "independence_key": "REPLACE_WITH_ORIGINAL_REPORT_GROUP", "locator": "REPLACE", "limitations": []}
+  ],
+  "claims": [
+    {"id": "claim-01", "text": "REPLACE_WITH_EXACT_CLAIM", "status": "reported", "source_ids": ["source-01"], "confidence": "REPLACE", "wording_limits": [], "current_resolution_check": "REPLACE", "used_in_script": false}
+  ]
+}
