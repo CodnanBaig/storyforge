@@ -382,7 +382,15 @@ class BundledScaffoldTests(unittest.TestCase):
             self.assertGreater(len(list((project / ".storyforge/renderer/public/fonts").glob("*.ttf"))), 0)
             source = resource_root()
             manifest = json.loads((project / ".storyforge/installation.json").read_text())
-            for relative in ("renderer/package-lock.json", "agents/discovery.md", "schemas/task-result.schema.json"):
+            for relative in (
+                "renderer/package-lock.json", "agents/discovery.md", "schemas/task-result.schema.json",
+                "agents/youtube-creative-review-agent/youtube-script-creative-review-agent.md",
+                "agents/youtube-creative-review-agent/src/gate.mjs",
+                "agents/youtube-creative-review-agent/schemas/review.schema.json",
+                "agents/youtube-creative-review-agent/references/research-protocol.md",
+                "docs/creative-review.md",
+            ):
+                self.assertEqual((project / ".storyforge" / relative).read_bytes(), (source / relative).read_bytes())
                 expected = hashlib.sha256((source / relative).read_bytes()).hexdigest()
                 self.assertEqual(manifest["files"][".storyforge/" + relative], expected)
             for directory, pattern in ((project / ".codex/agents", "*.toml"), (project / ".claude/agents", "*.md")):

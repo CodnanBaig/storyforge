@@ -30,6 +30,8 @@ REQUIRED_RESOURCES = {
     "AGENTS.md", "CLAUDE.md", "README.md", "LICENSE", "THIRD_PARTY_NOTICES.md", ".env.example",
     ".codex/config.toml", ".codex/agents/sf_discovery.toml", ".claude/agents/sf-discovery.md",
     "agents/orchestrator.md", "agents/discovery.md", "agents/assets_3d.md",
+    "agents/youtube-creative-review-agent/youtube-script-creative-review-agent.md",
+    "agents/youtube-creative-review-agent/src/gate.mjs", "docs/creative-review.md",
     "schemas/task-result.schema.json", "schemas/brief.schema.json", "schemas/words.schema.json",
     "templates/style-bible.json", "examples/brief-fiction-short.json", "docs/agent-hosts.md",
     "docs/contracts.md", "docs/assets/StoryForge-Render-Proofs.png", "renderer/README.md",
@@ -167,6 +169,14 @@ assert (client / "package.json").read_bytes() == application
 assert (client / "AGENTS.md").read_bytes().startswith(instructions)
 assert (project.renderer / "package-lock.json").read_bytes() == (root / "renderer/package-lock.json").read_bytes()
 assert (project.renderer / "public/fonts/DejaVuSans.ttf").read_bytes() == (root / "renderer/public/fonts/DejaVuSans.ttf").read_bytes()
+for relative in (
+    "agents/youtube-creative-review-agent/youtube-script-creative-review-agent.md",
+    "agents/youtube-creative-review-agent/src/gate.mjs",
+    "agents/youtube-creative-review-agent/schemas/review.schema.json",
+    "agents/youtube-creative-review-agent/references/research-protocol.md",
+    "docs/creative-review.md",
+):
+    assert (project.toolkit / relative).read_bytes() == (root / relative).read_bytes(), relative
 assert len(list((client / ".codex/agents").glob("*.toml"))) == 16
 assert len(list((client / ".claude/agents").glob("*.md"))) == 16
 again = setup_project(client)

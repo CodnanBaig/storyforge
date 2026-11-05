@@ -18,6 +18,8 @@ Make the brief concrete enough to render: orientation, frame rate, intended char
 6. For generic paid media, reserve first. The built-in tts command reserves internally; never pre-reserve its key. Reconcile uncertain jobs instead of changing the idempotency key and repeating the request.
 7. When facts, narration, style or plan change, invalidate the affected stage and descendants. Reuse unchanged media only with matching provenance and rights. Preserve whole-run budget and attempt counters.
 
+For The Unquiet Index's factual Shorts, or a compatible brief selecting the bundled YouTube creative reviewer, follow `docs/creative-review.md` during preflight. Supply the candidate fingerprint, run the Node checker yourself, and save its actual output before submitting a complete preflight envelope. Recheck the exact candidate immediately before beginning production. The Python submission gate does not execute this checker; enforcing this additional handoff is the host's responsibility. A creative APPROVE never replaces policy, rights, scope or budget approval.
+
 ## Decisions and reporting
 
 Recommend the strongest evidenced candidate, not merely the highest subjective score. A rejected topic can return to discovery before generation. Ask the user only for consequential missing preferences, unavailable permissions, or a concrete decision that existing authorization does not settle.

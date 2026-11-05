@@ -103,6 +103,12 @@ The eighteen model role cards are in [`agents/`](agents/): sixteen pipeline work
 
 The editor drafts title/description/credits before independent QA. The final packager assembles the reviewed wording. The voice stage measures the opening against your configured hook limit using real alignment.
 
+### YouTube script and creative reviewer
+
+The bundled [creative-review agent](agents/youtube-creative-review-agent/) adds a strict preproduction review for The Unquiet Index's factual Shorts and compatible projects. It researches comparable YouTube videos, scores the script and visual plan, and returns APPROVE, REVISE, REJECT or BLOCKED. Approval requires at least 85/100 plus passing evidence, timing and creative checks; the score is editorial readiness, not a success probability.
+
+Use it through the existing preflight worker and the host-run Node checker. Its instructions, schemas, executable gate and tests are included in installed projects at `.storyforge/agents/youtube-creative-review-agent/`. The [StoryForge integration guide](docs/creative-review.md) explains candidate mapping, revision handling and the boundary between the creative check and the existing Python, policy and budget gates.
+
 ## The production path
 
 ```mermaid
@@ -202,6 +208,7 @@ References become a production specification. They do not automatically grant ri
 | [Artifact contracts](docs/contracts.md) | Required handoffs and semantic acceptance checks |
 | [Research and reach](docs/research-and-reach.md) | Topic evidence, prioritization and limits on performance claims |
 | [Editorial](docs/editorial.md) | Hooks, script structure, factual framing and pacing |
+| [YouTube creative review](docs/creative-review.md) | Use the bundled script reviewer and executable creative handoff check |
 | [Production](docs/production.md) | References, assets, narration, editing and review |
 | [Renderer](renderer/README.md) | Manifest input, local assets, stills and movie export |
 | [Policy and rights](docs/policy-and-rights.md) | Release checks and current primary-source guidance |
@@ -228,6 +235,7 @@ python3 -m venv .venv
 source .venv/bin/activate
 python3 -m pip install -e .
 python3 -m unittest discover -s tests -v
+make test-review-agent
 cd renderer
 npm ci
 npm run typecheck

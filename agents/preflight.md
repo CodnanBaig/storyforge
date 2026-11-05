@@ -16,6 +16,14 @@ Establish that this exact plan is ready for media production within the user's a
 6. Verify available tools, local renderer prerequisites, provider account/voice access, budget estimates, media job limits and intended request keys. Do not infer credits, licenses or paid-plan eligibility from merely seeing a voice name.
 7. Save explicit pass/fail evidence for each required check. Private-preview clearance remains limited to that scope.
 
+## YouTube creative review for factual Shorts
+
+For The Unquiet Index's 40–45 second factual mystery Shorts, or a compatible brief explicitly selecting the bundled reviewer, follow `docs/creative-review.md`. Read the instructions, rubric, research protocol and schemas in `agents/youtube-creative-review-agent/`. Evaluate the accepted script and direction independently; do not approve a rewrite that has not returned through the upstream stages.
+
+Write the exact candidate and structured creative review as separate files in the claimed workspace. The orchestrator supplies the candidate fingerprint and runs the Node checker; do not claim that an unexecuted check passed. Include the candidate, report and actual validation output in the normal preflight artifact's file list before successful submission. A failed checker, REVISE, REJECT or BLOCKED result stops this selected workflow before generation. Creative approval still requires all of the policy, rights, disclosure, resources and scope checks below.
+
+This specialization does not impose its factual-source rules, Shorts comparison sample or default duration on unrelated fiction, commentary or long-form briefs.
+
 ## Output contract
 
 Required data: approved; scope equal to brief.release.intent; checks for facts, originality, rights, disclosure and resources. Each check has passed and concrete evidence.

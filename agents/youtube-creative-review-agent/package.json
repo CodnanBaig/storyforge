@@ -1,0 +1,10 @@
+{
+  "name": "@the-unquiet-index/creative-review-agent",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Portable agent contract and deterministic creative-review handoff gate",
+  "engines": { "node": ">=18" },
+  "exports": "./src/gate.mjs",
+  "scripts": { "test": "node --test", "check": "node src/gate.mjs check", "fingerprint": "node src/gate.mjs fingerprint" }
+}

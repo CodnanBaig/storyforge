@@ -1,0 +1,144 @@
+{
+  "schema_version": "1.0",
+  "episode_id": "replace-with-episode-id",
+  "input_sha256": "02dfa4c223479f8b1469ecb1f1af11a014db4ffdb05a9d952592e8ed325ca7ee",
+  "reviewed_at": "2026-11-05T21:40:19.963Z",
+  "reviewer": "Illustrative example only; no editorial review performed",
+  "decision": "BLOCKED",
+  "summary": "The blank template cannot be reviewed or approved. This example contains no live YouTube research.",
+  "research": {
+    "mode": "evergreen",
+    "completed": false,
+    "queries": [],
+    "comparables": [],
+    "findings": [],
+    "counterevidence": [],
+    "limitations": [
+      "Example only. No live search, factual verification or competitor inspection was performed."
+    ],
+    "evidence_confidence": "low"
+  },
+  "scores": {
+    "topic_demand": {
+      "score": null,
+      "rationale": "The completed episode and current research are not available.",
+      "evidence_refs": []
+    },
+    "hook": {
+      "score": null,
+      "rationale": "The completed episode and current research are not available.",
+      "evidence_refs": []
+    },
+    "clarity": {
+      "score": null,
+      "rationale": "The completed episode and current research are not available.",
+      "evidence_refs": []
+    },
+    "narrative": {
+      "score": null,
+      "rationale": "The completed episode and current research are not available.",
+      "evidence_refs": []
+    },
+    "payoff": {
+      "score": null,
+      "rationale": "The completed episode and current research are not available.",
+      "evidence_refs": []
+    },
+    "visual": {
+      "score": null,
+      "rationale": "The completed episode and current research are not available.",
+      "evidence_refs": []
+    },
+    "originality": {
+      "score": null,
+      "rationale": "The completed episode and current research are not available.",
+      "evidence_refs": []
+    },
+    "packaging": {
+      "score": null,
+      "rationale": "The completed episode and current research are not available.",
+      "evidence_refs": []
+    },
+    "audio_captions": {
+      "score": null,
+      "rationale": "The completed episode and current research are not available.",
+      "evidence_refs": []
+    },
+    "channel_fit": {
+      "score": null,
+      "rationale": "The completed episode and current research are not available.",
+      "evidence_refs": []
+    }
+  },
+  "total_score": null,
+  "gates": {
+    "factual_support": {
+      "status": "unknown",
+      "rationale": "The required script, research and creative evidence have not been supplied.",
+      "evidence_refs": []
+    },
+    "originality": {
+      "status": "unknown",
+      "rationale": "The required script, research and creative evidence have not been supplied.",
+      "evidence_refs": []
+    },
+    "complete_payoff": {
+      "status": "unknown",
+      "rationale": "The required script, research and creative evidence have not been supplied.",
+      "evidence_refs": []
+    },
+    "timing_feasibility": {
+      "status": "unknown",
+      "rationale": "The required script, research and creative evidence have not been supplied.",
+      "evidence_refs": []
+    },
+    "visual_feasibility": {
+      "status": "unknown",
+      "rationale": "The required script, research and creative evidence have not been supplied.",
+      "evidence_refs": []
+    },
+    "truthful_packaging": {
+      "status": "unknown",
+      "rationale": "The required script, research and creative evidence have not been supplied.",
+      "evidence_refs": []
+    }
+  },
+  "timing": {
+    "word_count": 0,
+    "estimated_min_seconds": null,
+    "estimated_max_seconds": null,
+    "method": "No narration script or timing plan has been supplied.",
+    "measured_audio_seconds": null
+  },
+  "issues": [
+    {
+      "severity": "blocker",
+      "location": "input.script and research",
+      "problem": "The input is an unfilled example and has no researched script or comparable-video evidence.",
+      "fix": "Complete a real candidate, obtain current public evidence, and run the reviewer before requesting approval.",
+      "evidence_refs": [
+        "input:script",
+        "research:comparables"
+      ]
+    }
+  ],
+  "revision_brief": {
+    "required_changes": [
+      "Replace placeholders with a researched episode and a complete timed creative plan.",
+      "Provide current trend or evergreen research with genuine source observations.",
+      "Keep is_example true for demonstrations; use false only for an actual production candidate."
+    ],
+    "alternative_hooks": [],
+    "script_patch": null,
+    "visual_changes": []
+  },
+  "performance_outlook": {
+    "potential": "unknown",
+    "success_probability": null,
+    "qualified_view_forecast": null,
+    "reason": "No defensible performance assessment can be made from an empty template.",
+    "assumptions": []
+  },
+  "media_authorized": false,
+  "publication_authorized": false
+}

@@ -1,0 +1,51 @@
+{
+  "schema_version": "1.0",
+  "is_example": true,
+  "episode_id": "replace-with-episode-id",
+  "channel": {
+    "name": "The Unquiet Index",
+    "handle": "@TheUnquietIndex",
+    "niche": "Documented mysteries, extraordinary survival and strange real events",
+    "audience": "English-speaking viewers who enjoy concise, evidence-based mystery stories",
+    "language": "en"
+  },
+  "constraints": {
+    "duration_min_seconds": 40,
+    "duration_max_seconds": 45,
+    "format": "9:16",
+    "visual_stack": [
+      "Remotion",
+      "Three.js"
+    ],
+    "no_presenter": true
+  },
+  "research_brief": {
+    "mode": "evergreen",
+    "audience_fit": "",
+    "query_seeds": []
+  },
+  "script": {
+    "text": "",
+    "claim_links": []
+  },
+  "creative": {
+    "title": "",
+    "description": "",
+    "opening_frame": "",
+    "payoff": "",
+    "storyboard": [],
+    "style_notes": "Use approved project references and original scene-specific action.",
+    "sound_plan": "",
+    "caption_plan": ""
+  },
+  "sources": [],
+  "recent_episodes": [],
+  "channel_analytics": {
+    "available": false,
+    "notes": "No channel performance data supplied.",
+    "records": []
+  },
+  "rights_context": {
+    "intended_use": "private_noncommercial_preview"
+  }
+}
