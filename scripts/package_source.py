@@ -5,6 +5,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import tomllib
 import zipfile
 
 
@@ -13,13 +14,17 @@ def main() -> None:
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
-    exclude_dirs = {"node_modules", "__pycache__", ".git", ".venv", "runs", "build", "dist", "out"}
+    version = tomllib.loads((root / "pyproject.toml").read_text(encoding="utf-8"))["project"]["version"]
+    exclude_dirs = {"node_modules", "__pycache__", ".git", ".venv", "venv", "runs", "build", "dist", "out",
+                    ".storyforge", "_resources", ".cache", "cache", ".pytest_cache", ".mypy_cache", ".ruff_cache"}
     selected = []
     for path in sorted(root.rglob("*")):
         relative = path.relative_to(root)
-        if not path.is_file() or any(part in exclude_dirs for part in relative.parts): continue
+        if not path.is_file() or any(part in exclude_dirs or part.endswith(".egg-info") for part in relative.parts): continue
         if path.name == "BUILD_CONTRACT.md" or path.name.endswith((".pyc", ".sqlite3", ".sqlite3-wal", ".sqlite3-shm")): continue
         if path.name.startswith(".env") and path.name != ".env.example": continue
+        if path.suffix in {".pem", ".key"} or path.name in {".npmrc", ".pypirc", ".netrc"}: continue
+        if path.name.startswith(("credentials", "secrets")) and path.suffix == ".json": continue
         if path.is_symlink(): raise SystemExit(f"Refusing source symlink: {relative}")
         selected.append((path, relative))
     args.output.parent.mkdir(parents=True, exist_ok=True)
@@ -29,7 +34,7 @@ def main() -> None:
             archive.write(path, f"storyforge/{relative.as_posix()}")
             manifest.append({"path": relative.as_posix(), "bytes": path.stat().st_size,
                              "sha256": hashlib.sha256(path.read_bytes()).hexdigest()})
-        archive.writestr("storyforge/SOURCE_MANIFEST.json", json.dumps({"version": "0.1.0", "files": manifest}, indent=2)+"\n")
+        archive.writestr("storyforge/SOURCE_MANIFEST.json", json.dumps({"version": version, "files": manifest}, indent=2)+"\n")
     with zipfile.ZipFile(args.output) as archive:
         bad = archive.testzip()
         if bad: raise SystemExit(f"Archive verification failed: {bad}")

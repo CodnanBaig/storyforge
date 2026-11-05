@@ -1,10 +1,28 @@
 # Verification record
 
-Build date: **6 November 2026**. This record distinguishes executed local checks from live production work.
+Version: **0.2.0**. This record distinguishes executed local checks from live production work. The installation checks below cover the new package workflow; the existing visual proofs remain the renderer's original reviewed scene checks.
+
+## Installable package and project setup
+
+The wheel and source distribution were built from the canonical repository assets. The distribution verifier compared the hashes of all **130 bundled resource files**, checked exclusion fixtures, rebuilt a wheel from the source distribution, and verified reproducible wheel bytes. The source-built and source-distribution-built wheels were identical.
+
+Both wheels were installed noneditably into fresh Python environments after their temporary build checkouts had been deleted. Each installed package resolved its own resources, generated real worker task packets, initialized an existing project with all 32 native worker definitions, preserved the original app package file and instructions, and completed an idempotent setup rerun.
+
+An additional clean installed environment ran the normal `storyforge setup` command in an existing-app fixture. npm installed the renderer's locked dependencies. Repeating setup from a project subdirectory created or updated zero files and reused those dependencies. `storyforge start --brief` reused a saved brief, and a task packet requested from outside that project retained the correct project toolkit and renderer paths.
+
+The installed project's renderer passed TypeScript checking, validation of both included portrait/landscape manifests, and Remotion bundling. This validates the copied source and local dependency setup; it is not a new narrated-video production or full animation review.
+
+Reproduce the separate distribution check with development build dependencies installed:
+
+```bash
+python3 scripts/verify_distribution.py --output-dir dist/verification
+```
+
+No package was published to PyPI or npm. The supported public installation uses the repository's Git URL.
 
 ## Python coordinator and provider transports
 
-**72 tests passed** in the final substantive Python test run. The suite covers:
+**114 tests passed** in the final substantive Python test run. The default discovery command found 115 tests and skipped the opt-in distribution test; the full distribution verifier was executed separately and passed as described above. The suite covers:
 
 - Concurrent claims and exclusive task ownership.
 - Expired lease recovery, stale-token rejection and live-worker preservation.
@@ -19,6 +37,10 @@ Build date: **6 November 2026**. This record distinguishes executed local checks
 - Actual ffprobe inspection of a small FFmpeg-generated test clip.
 - Caption boundary conversion, provider consistency, measured hook limits, genuinely passing technical reports and delivery of the verified video.
 - Final metadata must match the exact independently reviewed packaging.
+- Resource lookup in source and installed layouts, including incomplete-installation errors.
+- Existing-project preservation, project-path validation, safe setup reruns, source credential/cache exclusions, native wrappers, and file/directory collisions.
+- Upgrading unchanged resources, preserving local customizations, conflict preflight, and explicit acknowledgment of a reviewed local merge without overwriting it.
+- Project discovery from subfolders, saved-brief reuse, external run origins, literal renderer argument paths, dependency fingerprints, and actionable install failures.
 
 Run the suite with:
 

@@ -2,8 +2,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import shutil
-import sys
 from pathlib import Path
 
 from . import __version__
@@ -14,25 +12,76 @@ from .media import captions_to_srt, validate_video
 from .pipeline import TASKS
 from .prompts import task_prompt, write_task_packet
 from .store import Run, StateError
-from .util import ROOT, read_json, write_json
+from .util import read_json, write_json
 
 
 def emit(value: object) -> None:
     print(json.dumps(value, indent=2, ensure_ascii=False, allow_nan=False), flush=True)
 
 
+def setup_summary(result: dict) -> None:
+    print(f"StoryForge {__version__} project prepared\n\nProject:  {result['project_root']}")
+    print(f"Renderer: {result['renderer_root']}")
+    print("Agents:   " + (", ".join(result["hosts"]) or "none selected"))
+    dependency_status = result["renderer_dependencies"]["status"].replace("_", " ")
+    print(f"Renderer dependencies: {dependency_status}")
+    print(f"Files: {len(result['created'])} created, {len(result['updated'])} updated, {len(result['unchanged'])} unchanged")
+    for warning in result["warnings"]:
+        print(f"Note: {warning}")
+    if result["renderer_dependencies"]["status"] == "skipped":
+        print("\nRerun storyforge setup without --skip-install before opening the renderer.")
+    workflow = (Path(result["toolkit_root"]) / "WORKFLOW.md").relative_to(Path(result["project_root"]))
+    print(f'\nOpen this project in Codex or Claude and say:\n  "Start StoryForge using {workflow.as_posix()}."')
+    print("\nUseful commands:\n  storyforge start    Collect a brief and create a saved run\n  storyforge studio   Open the video editor\n  storyforge preview  Render demo preview frames\n  storyforge doctor   Check local readiness", flush=True)
+
+
+def start_summary(result: dict) -> None:
+    print(f"Created production: {result['run_id']}\n\nRun:   {result['path']}\nBrief: {result['brief']}")
+    print(f"Ready tasks: {', '.join(result['ready'])}")
+    print(f"\nContinue in Codex or Claude:\n  Continue StoryForge run {result['path']}. Use the saved brief.\n", flush=True)
+
+
 def parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(prog="storyforge", description="Resumable multi-agent video production. Run from the project root.")
+    p = argparse.ArgumentParser(prog="storyforge", description="Install, prepare and run a resumable multi-agent video studio in any project.")
     p.add_argument("--version", action="version", version=__version__)
     sub = p.add_subparsers(dest="command", required=True)
+    a = sub.add_parser("setup", help="Add StoryForge agents and a renderer to a new or existing project")
+    a.add_argument("directory", type=Path, nargs="?", help="Project directory (default: current project or current directory)")
+    a.add_argument("--host", choices=["both", "codex", "claude", "none"],
+                   help="Agent hosts to add (both for new projects; preserve existing selection on reruns)")
+    a.add_argument("--skip-install", action="store_true", help="Prepare files without downloading renderer dependencies")
+    a.add_argument("--keep-local", type=str, action="append", default=[], metavar="PATH",
+                   help="Acknowledge an already reviewed local merge for one managed resource, preserving its bytes (repeatable; project-relative)")
+    a.add_argument("--json", action="store_true", help="Return structured setup details and the complete file inventory")
+    for command in ("info", "doctor"):
+        a = sub.add_parser(command, help="Show package/project paths" if command == "info" else "Inspect local prerequisites and show setup next steps")
+        a.add_argument("--project", type=Path, help="A directory within the project (default: current directory)")
+    a = sub.add_parser("start", help="Ask for a production brief and create a saved run")
+    a.add_argument("--brief", type=Path, help="Use an existing validated brief instead of asking questions")
+    a.add_argument("--project", type=Path)
+    a.add_argument("--runs-dir", type=Path, help="Override the project's saved-runs directory")
+    a.add_argument("--json", action="store_true", help="Return structured saved-run state")
+    for command in ("studio", "preview", "render"):
+        a = sub.add_parser(command, help={"studio": "Open the project's Remotion Studio server",
+                                         "preview": "Render preview stills in the project's renderer",
+                                         "render": "Render a video from an explicit props file"}[command])
+        a.add_argument("--project", type=Path)
+        a.add_argument("--props", type=Path, required=command == "render")
+        if command in {"preview", "render"}:
+            a.add_argument("--out", type=Path, required=command == "render", help="Output directory for stills, or output video filename")
+        if command == "preview":
+            a.add_argument("--frames", help="Comma-separated frame numbers; defaults to one frame per scene")
+            a.add_argument("--scale", type=float, default=0.5)
+        if command == "render":
+            a.add_argument("--allow-demo", action="store_true", help="Permit a visibly labeled technical demonstration export")
     a = sub.add_parser("intake", help="Ask niche, duration, format, references, and preferences")
     a.add_argument("--output", type=Path, default=Path("brief.json"))
     a = sub.add_parser("init", help="Create a fresh saved run from a validated brief")
-    a.add_argument("--brief", type=Path, required=True); a.add_argument("--runs-dir", type=Path, default=Path("runs"))
+    a.add_argument("--brief", type=Path, required=True); a.add_argument("--runs-dir", type=Path,
+                   help="Defaults to the project's saved-runs directory, or ./runs without setup")
     a = sub.add_parser("validate-brief"); a.add_argument("file", type=Path)
-    sub.add_parser("doctor", help="Inspect local prerequisites without reading credentials")
     a = sub.add_parser("demo", help="Exercise the offline workflow fixture; never generates media")
-    a.add_argument("--runs-dir", type=Path, default=Path("runs"))
+    a.add_argument("--runs-dir", type=Path)
     for cmd in ("status", "next", "resume", "events"):
         a = sub.add_parser(cmd); a.add_argument("run_dir", type=Path)
     for cmd in ("task", "claim", "submit", "heartbeat", "retry", "invalidate", "reserve-media"):
@@ -77,20 +126,59 @@ def main(argv: list[str] | None = None) -> int:
     args = parser().parse_args(argv)
     try:
         cmd = args.command
-        if cmd == "doctor":
-            from .adapters import adapter_available
-            emit({"storyforge": __version__, "python": sys.version.split()[0], "python_ok": sys.version_info >= (3, 11),
-                  "tools": {name: bool(shutil.which(name)) for name in ("node", "npm", "ffmpeg", "ffprobe")},
-                  "adapters": {name: adapter_available(name) for name in ("codex", "claude")},
-                  "renderer_installed": (ROOT / "renderer" / "node_modules" / "remotion").exists(),
-                  "authentication": "Not inspected. Verify provider authentication in its own CLI.",
-                  "note": "Native host mode works without subprocess CLIs. Renderer requires Node dependencies."})
+        if cmd == "setup":
+            from .project import find_project
+            from .scaffold import setup_project
+            from .workspace import install_renderer, selected_project
+            directory = args.directory.expanduser() if args.directory is not None else Path.cwd()
+            existing = find_project(directory) if directory.exists() else None
+            if args.directory is None and existing is not None:
+                directory = existing.root
+            host = args.host
+            if host is None:
+                if existing and existing.root == directory.resolve():
+                    hosts = set(existing.config["hosts"])
+                    host = "both" if hosts == {"codex", "claude"} else next(iter(hosts), "none")
+                else:
+                    host = "both"
+            result = setup_project(directory, host=host, keep_local=args.keep_local)
+            project = selected_project(Path(result["project_root"]), required=True)
+            assert project is not None
+            result["renderer_dependencies"] = {"status": "skipped"} if args.skip_install else install_renderer(project)
+            result["next"] = ["Open Codex or Claude in this project and ask it to start StoryForge.",
+                              "Run storyforge start for terminal intake, or storyforge studio for the editor.",
+                              "Run storyforge doctor to check local readiness."]
+            emit(result) if args.json else setup_summary(result)
+        elif cmd == "info":
+            from .workspace import project_info
+            emit(project_info(args.project))
+        elif cmd == "doctor":
+            from .workspace import doctor
+            emit(doctor(args.project))
+        elif cmd == "start":
+            from .workspace import default_runs_dir, selected_project
+            project = selected_project(args.project)
+            runs = default_runs_dir(args.runs_dir, args.project)
+            brief = validate_brief(read_json(args.brief) if args.brief else interactive())
+            run = Run.create(brief, runs, project_root=project.root if project else None)
+            result = {**run.status(), "brief": str(run.path / "brief.json"),
+                      "next": f"Open your agent host and ask it to continue StoryForge run {run.path}. Use the saved brief; no need to repeat intake."}
+            emit(result) if args.json else start_summary(result)
+        elif cmd in {"studio", "preview", "render"}:
+            from .workspace import renderer_command
+            return renderer_command(cmd, start=args.project, props=args.props,
+                                    output=getattr(args, "out", None), frames=getattr(args, "frames", None),
+                                    scale=getattr(args, "scale", 0.5), allow_demo=getattr(args, "allow_demo", False))
         elif cmd == "intake":
             if args.output.exists(): raise StateError("Intake output already exists; choose a new path to preserve it")
             brief = validate_brief(interactive()); write_json(args.output, brief); emit({"brief": str(args.output.resolve())})
         elif cmd == "validate-brief": validate_brief(read_json(args.file)); emit({"valid": True})
-        elif cmd == "init": emit(Run.create(read_json(args.brief), args.runs_dir).status())
-        elif cmd == "demo": emit(create_demo(args.runs_dir).status())
+        elif cmd in {"init", "demo"}:
+            from .workspace import default_runs_dir, selected_project
+            project = selected_project()
+            runs = default_runs_dir(args.runs_dir)
+            options = {"project_root": project.root if project else None}
+            emit((Run.create(read_json(args.brief), runs, **options) if cmd == "init" else create_demo(runs, **options)).status())
         elif cmd == "qa-media":
             report = validate_video(args.video, validate_brief(read_json(args.brief)))
             if args.output: write_json(args.output, report)
@@ -151,9 +239,10 @@ def main(argv: list[str] | None = None) -> int:
                 emit(result); return 0 if result["status"] == "complete" else 2
         return 0
     except (ValidationError, StateError, OSError, ValueError, KeyError, TypeError) as ex:
-        emit({"error": str(ex), "type": type(ex).__name__}); return 2
+        details = {"conflicts": ex.conflicts} if hasattr(ex, "conflicts") else {}
+        emit({"error": str(ex), "type": type(ex).__name__, **details}); return 2
     except KeyboardInterrupt:
-        emit({"interrupted": True, "next": "Saved task state remains; inspect jobs, then resume expired leases."}); return 130
+        emit({"interrupted": True, "next": "Project files and saved run state remain. Inspect active jobs before resuming production."}); return 130
 
 
 if __name__ == "__main__": raise SystemExit(main())

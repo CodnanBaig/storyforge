@@ -9,6 +9,8 @@ from datetime import datetime, timezone
 from typing import Any
 from uuid import uuid4
 
+from .resources import resource_root
+
 
 def now() -> str:
     return datetime.now(timezone.utc).isoformat()
@@ -66,4 +68,4 @@ def frame_count(seconds: float, fps: int) -> int:
     return math.floor(seconds * fps + 0.5)
 
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = resource_root()

@@ -9,7 +9,8 @@ from typing import Callable
 from .pipeline import TASKS
 from .prompts import task_prompt, write_task_packet
 from .store import Run, StateError
-from .util import ROOT, write_json
+from .util import write_json
+from .workspace import run_resource_paths
 
 
 def run_pipeline(run: Run, provider: str, *, workers: int = 3, timeout_seconds: int = 900,
@@ -34,7 +35,7 @@ def run_pipeline(run: Run, provider: str, *, workers: int = 3, timeout_seconds: 
         try:
             write_task_packet(run, task_id, workspace)
             answer = run_agent(provider, task_prompt(run, task_id, workspace), workspace,
-                               ROOT / "schemas" / "task-result.schema.json",
+                               run_resource_paths(run.path)["toolkit"] / "schemas" / "task-result.schema.json",
                                timeout_seconds=timeout_seconds, model=model, max_turns=max_turns, cancel_event=cancellation)
             write_json(workspace / "result.json", answer.payload)
             write_json(workspace / "usage.json", answer.usage)

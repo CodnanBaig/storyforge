@@ -51,7 +51,7 @@ class Run:
         if not self.db.is_file(): raise StateError(f"Not a StoryForge run: {self.path}")
 
     @classmethod
-    def create(cls, brief: dict, runs_dir: Path, *, demo: bool = False) -> "Run":
+    def create(cls, brief: dict, runs_dir: Path, *, demo: bool = False, project_root: Path | None = None) -> "Run":
         validate_brief(brief)
         slug = re.sub(r"[^a-z0-9]+", "-", brief["project_name"].lower()).strip("-")[:48] or "video"
         run_id = f"{slug}-{uuid4().hex[:10]}"
@@ -65,11 +65,31 @@ class Run:
             conn.executescript(SCHEMA)
             values = {"run_id": run_id, "brief": brief, "brief_hash": digest(brief), "demo": demo,
                       "created_at": now(), "worker_calls": 0, "schema_version": "1.0"}
+            if project_root is not None:
+                values["project_root"] = str(project_root.expanduser().resolve())
             conn.executemany("INSERT INTO meta VALUES (?, ?)", [(k, canonical(v)) for k, v in values.items()])
             conn.executemany("INSERT INTO tasks(id,status,updated) VALUES (?,?,?)", [(t.id, "pending", now()) for t in PIPELINE])
             conn.commit()
         finally: conn.close()
         return cls(path)
+
+    def project_root(self) -> Path | None:
+        """Remember the originating project when runs use an external directory.
+
+        Older/standalone runs have no binding and continue to resolve by their
+        ancestry. This is read-only metadata access; no lease is acquired.
+        """
+        conn = sqlite3.connect(self.db)
+        try:
+            row = conn.execute("SELECT value FROM meta WHERE key='project_root'").fetchone()
+        finally:
+            conn.close()
+        if row is None:
+            return None
+        value = json.loads(row[0])
+        if not isinstance(value, str) or not Path(value).is_absolute():
+            raise StateError("Saved project origin is invalid for this run")
+        return Path(value)
 
     @contextmanager
     def transaction(self) -> Iterator[sqlite3.Connection]:

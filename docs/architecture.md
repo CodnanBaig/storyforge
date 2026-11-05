@@ -4,10 +4,12 @@
 
 The producer owns the brief, state machine, task allocation, and integration. Workers own task-local output folders and return a JSON envelope. Both native host delegation and the optional subprocess executor use the same SQLite state. This avoids two disconnected workflows where the interactive host claims completion but the CLI cannot resume it.
 
-`storyforge/pipeline.py` defines the graph. Sixteen roles are primary tasks. The producer and post-publication analyst are supporting roles. The graph permits parallel work, but exact concurrency depends on the host's capacity; having sixteen roles never means sixteen simultaneous processes are required.
+The installed coordinator defines the graph; its source is `storyforge/pipeline.py`. Producers inspect readiness through `storyforge status` and `storyforge next`, so an initialized client project does not need a copy of the Python source. Sixteen roles are primary tasks. The producer and post-publication analyst are supporting roles. The graph permits parallel work, but exact concurrency depends on the host's capacity; having sixteen roles never means sixteen simultaneous processes are required.
 
 | Layer | Responsibilities | Source |
 | --- | --- | --- |
+| Distribution | Bundled resources for normal and editable installations | `resources.py`, package build configuration |
+| Project | Discovery, contained paths, safe resource and host setup | `project.py`, `scaffold.py` |
 | Brief | User inputs, defaults, reuse, validation | `intake.py`, `contracts.py` |
 | Graph | Dependencies, ready nodes, descendants | `pipeline.py` |
 | State | Leases, history, fingerprints, media ledger | `store.py` |
@@ -17,6 +19,18 @@ The producer owns the brief, state machine, task allocation, and integration. Wo
 | Media | Actual streams, duration, aligned subtitles | `media.py`, optional `voice.py` |
 | Renderer bridge | Draft blocking from approved shot structure | `render_bridge.py` |
 | Video | Geometry, frame-based animation, sound, layout | `renderer/` |
+
+## Installed package and project resources
+
+The Python package is named `storyforge-video` and exposes the `storyforge` executable. Its runtime uses the standard library. A normal wheel includes the non-Python production resources beneath `storyforge/_resources`; the build copies them from the repository's canonical asset folders. An editable developer install resolves those canonical folders directly. Generated caches, node dependencies, production runs, and credentials are excluded from the distribution.
+
+`storyforge setup` creates a client project's `storyforge.json` and copies the toolkit beneath `.storyforge/`. The renderer is a project-owned npm workspace inside that directory. Its package and lockfile are independent of a React or Next.js application's root dependencies. Python package installation does not run npm or install host CLIs; setup handles renderer dependencies unless `--skip-install` is selected.
+
+`storyforge info` reports the selected project and all resolved paths. Project discovery walks upward for `storyforge.json`. Task packets carry `PROJECT_ROOT`, `TOOLKIT_ROOT`, `RENDERER_ROOT`, and `RUN_DIR` explicitly, so a worker can read the appropriate local role card and renderer even when the Python package lives elsewhere. A run created at an external output location retains its originating project in saved metadata. Moving it beneath a configured project selects that new project; a missing external origin raises a recovery error. Standalone runs without a project can still use the installation's bundled resources. Mutable production files belong in the selected run or project, not in the installed package.
+
+Setup records managed file hashes in `.storyforge/installation.json`. A rerun can refresh an owned file only when doing so preserves local changes; conflicting unmanaged or edited files require review. Host instructions are added in managed sections while surrounding text remains intact. Existing host settings are preserved, and setup does not alter global host configuration. Writes reject paths escaping the project and symlink redirects. These checks prevent accidental replacement of application code during ordinary setup; they do not sandbox later model workers.
+
+Upgrading the CLI and updating a project's copied toolkit are separate operations. An upgrade makes a newer bundled library available; rerunning setup applies eligible changes to that project. Current runs retain their state and artifacts. Custom renderers, role cards, and instructions stay visible for deliberate merge decisions.
 
 ## Files and authority
 
@@ -54,7 +68,7 @@ Render stills and short scene ranges to evaluate the design before an expensive 
 2. Add the role card to `agents/`, then native wrappers to `.codex/agents/` and `.claude/agents/`.
 3. Specify its result shape and semantic gate in `contracts.py`; update `scripts/build_contracts.py` and regenerate public schemas.
 4. Add a realistic failure and recovery test. Avoid a test that merely repeats the implementation.
-5. Start new runs with the revised graph. Existing runs do not silently migrate task definitions in v0.1.
+5. Start new runs with the revised graph. Existing runs do not silently migrate task definitions in this release.
 
 ## Add a provider
 

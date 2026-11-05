@@ -5,12 +5,12 @@ from .intake import make_brief
 from .store import Run
 
 
-def create_demo(runs_dir: Path) -> Run:
+def create_demo(runs_dir: Path, *, project_root: Path | None = None) -> Run:
     brief = make_brief(project_name="Offline workflow demonstration", niche="Fictional mystery: a lighthouse without a light")
     brief["content_kind"] = "fiction"
     brief["budget"]["max_model_calls"] = 0
     brief["budget"]["max_media_jobs"] = 0
-    run = Run.create(brief, runs_dir, demo=True)
+    run = Run.create(brief, runs_dir, demo=True, project_root=project_root)
     rid = run.status()["run_id"]
     hook = "At midnight, the lighthouse went dark."
     script = hook + " The keeper climbed the stairs, carrying the only working torch. Every window reflected an empty sea. But upstairs, a small green signal flashed from inside a locked drawer. He opened it. The light stopped. There was no lamp inside, only an old brass key, still warm. Then, far below, the front door unlocked. This is an original fictional scene, made to demonstrate the production workflow."

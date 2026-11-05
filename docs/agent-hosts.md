@@ -4,41 +4,60 @@ StoryForge supports two ways to run the same pipeline. **Interactive host mode i
 
 The project does not require a new agent-platform subscription or a hosted backend. Model requests and connected media services still use your own accounts and their normal limits. Installation, authentication and service availability are separate from a successful local test.
 
-## 1. Start in the project folder
+## 1. Set up and open your project
 
-Use Python 3.11 or newer and the Node version specified by the renderer. From the extracted project folder, check the local tools:
+After [installing the CLI](installation.md), run setup in the project you want to use:
 
 ```bash
-python3 -m storyforge doctor
+cd path/to/your-project
+storyforge setup
+storyforge info
+storyforge doctor
 ```
 
-Open that folder in your preferred coding agent. `AGENTS.md` is the shared operating guide; `CLAUDE.md` adds Claude routing. Project-scoped native worker definitions are already included. Allow the host to apply the project's normal trust controls; the library does not change your global configuration.
+Setup defaults to both hosts for a new project; use `--host codex` or `--host claude` if you want one integration. Reruns retain the existing selection. Setup adds a StoryForge section to the selected host's project instructions and installs project-scoped worker definitions. Existing instruction text, application dependencies, and host settings are preserved. No global host configuration is changed. If your existing configuration disables agents, setup reports that choice instead of overriding it.
+
+Open that folder in your preferred coding agent. `.storyforge/WORKFLOW.md` is the project-specific producer entry point. The managed `AGENTS.md` and `CLAUDE.md` sections route the host there. Allow the host to apply the project's normal trust controls. `doctor` checks local prerequisites; authentication and connected tools are still managed in the host.
 
 Use this first prompt:
 
-> Start StoryForge for a new YouTube video. First ask for my niche, approximate duration, format, and references. Then clarify audience, language, hook style, voice and spending limits only where needed. Research candidate topics, recommend one with evidence, and run the production workflow with the specialist agents. Keep checkpoints and show concrete blockers.
+> Start StoryForge using .storyforge/WORKFLOW.md for a new YouTube video. First ask for my niche, approximate duration, format, and references. Then clarify audience, language, hook style, voice and spending limits only where needed. Research candidate topics, recommend one with evidence, and run the production workflow with the specialist agents. Keep checkpoints and show concrete blockers.
 
 For your mystery channel you might supply:
 
 > The niche is documented mysteries and strange real events. Target about 43 seconds, 1080×1920 at 30 fps, English narration, no on-camera presenter. Use procedural Three.js story characters. I will provide visual references. Use a hook family with fresh wording for each episode. Start with research and a buildable storyboard; confirm the available narration service before any paid media work.
 
-For long form, specify the intended duration independently of the Short. A ten-minute documentary needs a chapter plan, evidence for each chapter, varied shots and a complete narrative—not a repeated Short template.
+For long form, specify the intended duration independently of the Short. A ten-minute documentary needs a chapter plan, evidence for each chapter, varied shots, and a complete narrative.
+
+### Keep project and toolkit paths distinct
+
+The installed package and your project may be in different folders. The producer uses `storyforge info`; each claimed task packet includes the resolved paths:
+
+| Packet field | Meaning |
+| --- | --- |
+| `PROJECT_ROOT` | The configured user project, containing `storyforge.json` and host definitions |
+| `TOOLKIT_ROOT` | That project's library, normally `PROJECT_ROOT/.storyforge` |
+| `RENDERER_ROOT` | The project's editable renderer, normally `TOOLKIT_ROOT/renderer` |
+| `RUN_DIR` | The specific production's saved state and artifacts |
+
+Read role cards, schemas, and guides beneath `TOOLKIT_ROOT`. Use the installed CLI for the task graph and state; a copied library does not need `storyforge/pipeline.py` or the rest of the Python source. In source-development mode, `TOOLKIT_ROOT` can instead be the checkout itself. Always use the packet's paths, and keep each worker's output inside its claimed attempt directory.
 
 ## 2. Intake and state
 
-The host can collect answers conversationally and write a valid brief, or you can use the terminal intake:
+The host can collect answers conversationally and create a run from the resulting brief:
 
 ```bash
-python3 -m storyforge intake --output brief.json
-python3 -m storyforge init --brief brief.json --runs-dir runs
+storyforge start --brief brief.json
 ```
 
-Retain the exact run directory printed by `init`. Substitute it for `RUN_DIR` in these examples:
+For terminal intake, run `storyforge start` without `--brief`. It asks the intake questions and saves a fresh run. These commands create state; the main host then dispatches the production tasks. The configured runs directory defaults to `.storyforge/runs/`.
+
+Retain the exact run directory printed by `start` or `init`. Substitute it for `RUN_DIR` in these examples:
 
 ```bash
-python3 -m storyforge status RUN_DIR
-python3 -m storyforge next RUN_DIR
-python3 -m storyforge task RUN_DIR discovery
+storyforge status RUN_DIR
+storyforge next RUN_DIR
+storyforge task RUN_DIR discovery
 ```
 
 The brief records the niche, duration, format, references and creative decisions. It also records authorized services and limits. A sample brief has no authority to approve spending or publishing. References can be “none; propose a style,” but the host should ask rather than silently choosing a final brand identity.
@@ -70,13 +89,13 @@ The worker map is identical across hosts:
 
 ### Codex
 
-Current Codex discovers standalone agent TOML files in `.codex/agents/`. Each included file defines a name, description and instructions, and points to the canonical role card. `.codex/config.toml` caps spawned threads at three. Models, permissions and connected tools follow the parent session. These definitions follow the [current official custom-agent documentation](https://learn.chatgpt.com/docs/agent-configuration/subagents), checked on 6 November 2026.
+Current Codex discovers standalone agent TOML files in the project's `.codex/agents/`. Each included file defines a name, description and instructions, and resolves its canonical role card through the task packet's `TOOLKIT_ROOT`. For a project without agent settings, setup supplies an agents section with a concurrency limit of three. Existing Codex settings remain in control. Models, permissions and connected tools follow the parent session. These definitions follow the [official custom-agent documentation](https://learn.chatgpt.com/docs/agent-configuration/subagents), checked on 6 November 2026.
 
-A host release may expose a different delegation tool or omit custom-role selection. In that case, the orchestrator gives a normal subagent the same `agents/TASK_ID.md` card and task packet. If delegation is unavailable entirely, it executes the roles sequentially and reports that fact. The artifact protocol remains unchanged.
+A host release may expose a different delegation tool or omit custom-role selection. In that case, the orchestrator gives a normal subagent the same `TOOLKIT_ROOT/agents/TASK_ID.md` card and task packet. If delegation is unavailable entirely, it executes the roles sequentially and reports that fact. The artifact protocol remains unchanged.
 
 ### Claude Code
 
-Claude workers live in `.claude/agents/`. The files use the [documented subagent frontmatter](https://code.claude.com/docs/en/sub-agents): a name, description, tools, inherited model and turn limit. Most workers have explicit tool lists. Media specialists inherit connected tools because provider names differ between installations. All workers exclude Agent/Task and are instructed not to delegate. No experimental agent-teams configuration is required.
+Claude workers live in the project's `.claude/agents/`. The files use the [documented subagent frontmatter](https://code.claude.com/docs/en/sub-agents): a name, description, tools, inherited model and turn limit. Their role-card paths also come from the task packet. Most workers have explicit tool lists. Media specialists inherit connected tools because provider names differ between installations. All workers exclude Agent/Task and are instructed not to delegate. No experimental agent-teams configuration is required.
 
 Use the native agent loader if your version supports it; otherwise pass the role card to a normal subagent. Existing permission and organization controls still apply.
 
@@ -85,19 +104,19 @@ Use the native agent loader if your version supports it; otherwise pass the role
 Only the main orchestrator changes shared run state. Before dispatching a worker it claims a ready task:
 
 ```bash
-python3 -m storyforge claim RUN_DIR research --worker research-agent --model-call
+storyforge claim RUN_DIR research --worker research-agent --model-call
 ```
 
 The model-call flag reserves a worker launch against the run's invocation cap; omit it only for genuinely manual work that does not dispatch a model. The response contains the task's lease token, workspace, attempt, expiry and `prompt_path`. Pass that emitted prompt file to the worker: it names the exact attempt directory. The standalone `task` command is for inspection and may name the parent task directory instead. The orchestrator maintains the lease while the worker is running:
 
 ```bash
-python3 -m storyforge heartbeat RUN_DIR research --token TOKEN --lease-seconds 1200
+storyforge heartbeat RUN_DIR research --token TOKEN --lease-seconds 1200
 ```
 
 After receiving the real result file, it submits using that same token:
 
 ```bash
-python3 -m storyforge submit RUN_DIR research --file RESULT_JSON --token TOKEN
+storyforge submit RUN_DIR research --file RESULT_JSON --token TOKEN
 ```
 
 Workers do not submit their own results. A valid lease does not make a bad artifact valid: the core checks the output structure, task semantics and files before advancing the graph. A stale worker cannot use an old token to complete a later attempt.
@@ -111,13 +130,13 @@ First install and authenticate the desired CLI through its official instructions
 Start one provider per run invocation:
 
 ```bash
-python3 -m storyforge run RUN_DIR --provider codex --workers 3
+storyforge run RUN_DIR --provider codex --workers 3
 ```
 
 Or:
 
 ```bash
-python3 -m storyforge run RUN_DIR --provider claude --workers 3
+storyforge run RUN_DIR --provider claude --workers 3
 ```
 
 Do not run the subprocess coordinator against tasks already held by native agents. Separate runs may use different providers. The provider can also be changed between attempts when a task is no longer active; accepted artifacts remain the handoff contract.
@@ -142,12 +161,12 @@ Each worker uses its own task directory. On macOS/Linux a timeout terminates its
 
 ## 6. Media-service handoff
 
-An optional direct ElevenLabs adapter is included in `storyforge/voice.py`. Image generation, other voice providers and music services can use the host's connected tools. The transport does not invent APIs or substitute a voice provider. An unavailable provider is a specific blocked production task.
+The installed CLI includes an optional direct ElevenLabs helper, `storyforge tts`. Image generation, other voice providers and music services can use the host's connected tools. The transport does not invent APIs or substitute a voice provider. An unavailable provider is a specific blocked production task.
 
 Before a paid request, the orchestrator reserves its exact request:
 
 ```bash
-python3 -m storyforge reserve-media RUN_DIR voice --token TOKEN --key REQUEST_KEY --provider PROVIDER --request REQUEST_JSON --usd ESTIMATED_USD --credits ESTIMATED_CREDITS
+storyforge reserve-media RUN_DIR voice --token TOKEN --key REQUEST_KEY --provider PROVIDER --request REQUEST_JSON --usd ESTIMATED_USD --credits ESTIMATED_CREDITS
 ```
 
 It then records the actual provider ID and outcome using `record-media`. A timeout after submission is `uncertain`, not permission to start the same generation again. Reservation checks are application controls; connected tools must follow this protocol. They do not create a technical spending firewall around an independently authenticated service.
@@ -166,7 +185,7 @@ This helper does not automatically split a long script into multiple billed requ
 
 The included adapter tests run real local subprocesses that imitate the CLIs. They cover both output formats, failed/partial results, missing tools, strict JSON decoding, timeouts including child processes, secret-log redaction and paths containing spaces. They consume no API credits.
 
-Current Codex CLI help and official host documentation were inspected while building this version. A paid end-to-end Codex or Claude production was **not** run. The next real production must verify the local CLI version, account access, research tools, narration service, asset rights and renderer on the target computer. Use `python3 -m unittest discover -s tests -p test_adapters.py -v` to rerun transport tests.
+Current Codex CLI help and official host documentation were inspected while building this version. A paid end-to-end Codex or Claude production was **not** run. The next real production must verify the local CLI version, account access, research tools, narration service, asset rights and renderer on the target computer. In a source checkout, use `python3 -m unittest discover -s tests -p test_adapters.py -v` to rerun transport tests.
 
 Task directories and prompt instructions are not OS security boundaries. Claude's native permissions and any configured sandbox remain responsible for tool access; Codex's worker sandbox supplies its own controls. Diagnostic streams are bounded and redact recognizable secrets, but redaction is best effort. Inspect local diagnostics before sharing them.
 

@@ -1,16 +1,24 @@
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "storyforge-video"
-version = "0.1.0"
+version = "0.2.0"
 description = "Local, resumable multi-agent video production for Codex and Claude"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE", "THIRD_PARTY_NOTICES.md", "renderer/public/fonts/LICENSE.txt"]
 requires-python = ">=3.11"
 dependencies = []
+
+[project.urls]
+Repository = "https://github.com/CodnanBaig/storyforge"
+Issues = "https://github.com/CodnanBaig/storyforge/issues"
 
 [project.scripts]
 storyforge = "storyforge.cli:main"
 
 [tool.setuptools]
 packages = ["storyforge"]
+include-package-data = false

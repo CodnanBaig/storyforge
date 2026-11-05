@@ -4,63 +4,83 @@
 
 StoryForge gives the model a production team, a shared brief, a durable task graph, and concrete handoff contracts. It asks for your niche, approximate duration, format, audience, and references. It researches several angles, develops a hook and script, directs the scenes, creates or acquires assets and narration, edits and renders the film, reviews it, and assembles a delivery package.
 
-This is version **0.1.0**, a working local foundation with **16 pipeline stages**, **18 role cards**, native agent definitions for both hosts, and a reusable scene renderer. The coordinator, CLI transports, artifact checks, and procedural scenes are implemented. Live research and paid generation use the capabilities and credentials available in your chosen host.
+Version **0.2.0** installs as a standalone CLI and sets up the production library inside any project. It includes **16 pipeline stages**, **18 role cards**, native agent definitions for both hosts, and a reusable scene renderer. Live research and paid generation use the capabilities and credentials available in your chosen host.
 
-**Build verification:** 72 Python tests passed, TypeScript and Remotion bundling passed, and eight actual stills were rendered and visually reviewed. A live, fully narrated production has not yet been exercised end to end. See the [workflow verification record](docs/VERIFICATION.md) and [renderer verification record](renderer/VERIFICATION.md) for exact coverage and limits.
+The coordinator, CLI transports, artifact checks, and procedural scenes are implemented. Automated checks use fake providers; the included visual proof contains eight actual rendered stills. A live, fully narrated production has not yet been exercised end to end. See the [workflow verification record](docs/VERIFICATION.md) and [renderer verification record](renderer/VERIFICATION.md) for exact coverage and limits.
 
-## Actual render previews
+## Install once, use in any project
 
-![Actual StoryForge Remotion and Three.js renders: lighthouse coast, archive room, signal chamber and forest path in portrait and landscape](docs/assets/StoryForge-Render-Proofs.png)
-
-These are code-rendered scenes from the included fictional, silent technical demonstration. The starter library has four environments, a consistent customizable character, reusable props, three palettes, bundled fonts, and portrait/landscape layouts. Browse the [individual frames and their verification data](renderer/previews/README.md).
-
-Your reference pack determines the production's visual style. The asset and editor agents author additional scenes, geometry and effects as the story requires.
-
-## Quickstart
-
-### Local prerequisites
-
-- Python **3.11+** for the dependency-free coordinator.
-- Node **22+** and npm for the renderer.
-- FFmpeg/ffprobe for actual media duration, streams, and delivery checks.
-- Codex or Claude Code for native host sessions; their authenticated CLIs for the optional subprocess runner.
-- A web-search capability for live research, and authorized media capabilities or supplied audio/assets for production.
-
-On a Mac, install missing runtimes using your normal package manager. Clone the repository and check the local workflow:
+With Python **3.11+**, Git, [pipx](https://pipx.pypa.io/latest/how-to/install-pipx.html), and Node **22+** with npm available:
 
 ```bash
-git clone https://github.com/CodnanBaig/storyforge.git
-cd storyforge
-
-python3 -m storyforge doctor
-python3 -m storyforge demo
+pipx install git+https://github.com/CodnanBaig/storyforge.git
+storyforge setup ./my-video-project
+cd my-video-project
+storyforge doctor
 ```
 
-The offline demo exercises the planning stages and deliberately stops at preflight. It uses synthetic fixtures, makes no model or media-generation calls, and does not represent a completed film.
+The public GitHub URL needs no GitHub token. The package includes its role cards, schemas, templates, host definitions, and renderer source, so you can use it without retaining a source checkout. The package name is `storyforge-video`; the command is `storyforge`. This release is installed from GitHub and has not been published to PyPI or npm.
 
-Install the renderer dependencies and inspect the two compositions:
+On macOS, install pipx with `brew install pipx`, run `pipx ensurepath`, then open a new terminal. Install FFmpeg/ffprobe before producing or checking real narration and video. See the [installation guide](docs/installation.md) for prerequisites, a virtual-environment alternative, upgrades, and troubleshooting.
+
+For an existing React, Next.js, or other project, run setup inside it:
 
 ```bash
-cd renderer
-npm ci
-npm run studio
+cd path/to/your-project
+storyforge setup
 ```
 
-The Studio command prints its local URL. Open it to inspect `StoryShort` and `StoryLong`. Both included demonstrations have a 45-second timeline; the landscape example proves the layout, not a complete long-form documentary.
+Setup adds a project-owned library and editable renderer under `.storyforge/`, installs the renderer's locked npm dependencies, and connects the selected coding agents. It preserves existing project instructions and app dependencies. Repeat setup safely; conflicting local edits are reported before generated files are replaced.
 
-Python commands run from the **repository root**. If you prefer a `storyforge` executable, use an editable install there: `python3 -m pip install -e .`. Keep the checkout; the coordinator loads its role cards, schemas, and renderer from the source tree. This release is a source distribution, not a standalone wheel containing the whole renderer.
+| Project file | Purpose |
+| --- | --- |
+| `storyforge.json` | Toolkit, renderer, run paths, and selected hosts |
+| `.storyforge/WORKFLOW.md` | Project-specific producer entry point |
+| `.storyforge/agents/`, `docs/`, `schemas/`, `templates/` | Reusable production library |
+| `.storyforge/renderer/` | Editable Remotion and Three.js workspace with its own dependencies |
+| `.storyforge/runs/` | Saved productions, task artifacts, media, and delivery files |
+| `AGENTS.md`, `CLAUDE.md`, native agent folders | Project-scoped host instructions and worker definitions |
+
+Use `storyforge setup --host codex` or `--host claude` to install one host's integration. `--host none` sets up only the library and renderer in a new project. Reruns retain existing integrations. `--skip-install` copies the project files without running npm; rerun setup later to install dependencies.
 
 ## Start a production in Codex or Claude Code
 
-Open the **repository root** in your chosen host, then paste:
+Open **your configured project folder** in Codex or Claude Code, then paste:
 
-> Read AGENTS.md (Codex) or CLAUDE.md (Claude), then start a StoryForge production. Ask me for the niche, approximate video length, aspect ratio, audience, and all relevant visual, character, pacing, font, and voice references. Save the brief and apply my hook preference. Use the task graph and independent agents, continue through routine fixes within the brief's budgets, and stop only for a missing capability, unresolved evidence, spending outside authorization, or a decision I need to make. Produce the actual reviewed deliverables; do not label a plan or silent preview as a finished video.
+> Start StoryForge using .storyforge/WORKFLOW.md. Ask me for my niche, approximate video length, format, and references. Reuse any answers I have already given. Help me choose the hook style and narration, then run the specialist agents through research, script, direction, assets, voice, editing, rendering, and independent review. Keep checkpoints and continue through routine fixes within my budget. Return the actual reviewed video and its editable project, sources, captions, and publishing materials.
 
 The native host acts as producer and is the recommended way to run a full production. It dispatches ready tasks in parallel, while each worker receives its role card, exact workspace and relevant artifacts. The same state and acceptance checks apply in both hosts. Default concurrency is three workers.
 
 Intake asks for missing answers and reuses saved channel decisions. References can include videos, stills, character sheets, fonts, palettes, animation examples, voice references, existing Remotion projects and explicit dislikes. An instruction to propose a style is also valid.
 
-See [host setup and coordination](docs/agent-hosts.md) for native agent loading, task claims, media reservations, recovery and permissions. Naming a provider in a role card does not install or connect it.
+The host needs live search for research and approved media tools or supplied assets for production. Setup does not log in to providers, launch model workers, or generate a film. See [host setup and coordination](docs/agent-hosts.md) for native agent loading, task claims, media reservations, recovery and permissions.
+
+## Everyday commands
+
+Run these from your project folder or one of its subfolders:
+
+| What you want to do | Command |
+| --- | --- |
+| Collect a brief and create a saved run | `storyforge start` |
+| Start from an existing brief | `storyforge start --brief my-brief.json` |
+| See the active project and resource paths | `storyforge info` |
+| Check runtimes, renderer dependencies, and available CLIs | `storyforge doctor` |
+| Open the local Remotion Studio server | `storyforge studio` |
+| Render stills from the included visual demo | `storyforge preview` |
+| Preview your own renderer props | `storyforge preview --props draft.props.json` |
+| Exercise the offline planning fixture | `storyforge demo` |
+
+`start` collects input and creates state; hand the returned run directory to your host to begin production. `studio` prints a local URL for `StoryShort` and `StoryLong`. `preview` renders PNG stills into a new directory under `.storyforge/previews/`. Both included visual demos have a 45-second timeline; the landscape example demonstrates layout, not a complete long-form documentary. The separate offline `demo` command uses synthetic planning artifacts and deliberately stops at preflight.
+
+The [CLI guide](docs/CLI.md) covers custom props, movie exports, task execution, and recovery.
+
+## Actual render previews
+
+![Actual StoryForge Remotion and Three.js renders: lighthouse coast, archive room, signal chamber and forest path in portrait and landscape](docs/assets/StoryForge-Render-Proofs.png)
+
+These are code-rendered scenes from the fictional, silent technical demonstration. The starter library has four environments, a consistent customizable character, reusable props, three palettes, bundled fonts, and portrait/landscape layouts. Browse the [individual frames and their verification data](renderer/previews/README.md).
+
+Your reference pack determines the production's visual style. The asset and editor agents author additional scenes, geometry and effects as the story requires.
 
 ## What is in the library
 
@@ -79,7 +99,7 @@ See [host setup and coordination](docs/agent-hosts.md) for native agent loading,
 | Quality | Independent fact check, preproduction checks, encoded media inspection, editorial/audio/visual review |
 | Handover | Video, captions, script, sources, credits, metadata, editable project, QA evidence |
 
-The eighteen model role cards are in [`agents/`](agents/): sixteen pipeline workers, the producer, and an advisory post-publication analyst. Native worker definitions are in [`.codex/agents/`](.codex/agents/) and [`.claude/agents/`](.claude/agents/). The full technical contract is in [`docs/contracts.md`](docs/contracts.md).
+The eighteen model role cards are in [`agents/`](agents/): sixteen pipeline workers, the producer, and an advisory post-publication analyst. Native worker definitions are in [`.codex/agents/`](https://github.com/CodnanBaig/storyforge/tree/main/.codex/agents) and [`.claude/agents/`](https://github.com/CodnanBaig/storyforge/tree/main/.claude/agents) in this repository and are installed at your configured project's root. The full technical contract is in [`docs/contracts.md`](docs/contracts.md).
 
 The editor drafts title/description/credits before independent QA. The final packager assembles the reviewed wording. The voice stage measures the opening against your configured hook limit using real alignment.
 
@@ -118,29 +138,31 @@ Three modes are available in the brief:
 
 ## Work from a terminal
 
-From the repository root, collect a brief and initialize a run:
+For a new production in a configured project:
 
 ```bash
-python3 -m storyforge intake --output my-brief.json
-python3 -m storyforge init --brief my-brief.json --runs-dir runs
+storyforge start
+# Or use an existing validated brief:
+storyforge start --brief my-brief.json
 ```
 
 Use the returned run directory in subsequent commands. The native host can operate it with `next`, `claim`, `task`, and `submit`. A subprocess coordinator can instead launch already-authenticated CLI workers:
 
 ```bash
-python3 -m storyforge run runs/RUN_ID --provider codex --workers 3 --until preflight
+storyforge run .storyforge/runs/RUN_ID --provider codex --workers 3 --until preflight
 # Or use --provider claude. Omit --until to attempt the full graph.
-python3 -m storyforge status runs/RUN_ID
+storyforge status .storyforge/runs/RUN_ID
 ```
 
 For new paid-media requests, use the native host orchestrator to reserve the exact request and direct generation. The subprocess runner dispatches workers but has no interactive media-reservation broker: it returns a blocked stage when a new reservation is needed. Complete that handoff in the native host, submit the actual artifact, then resume the runner. Existing provider IDs and saved media paths are included in that task's next packet for recovery. Already supplied media and procedural code can proceed through the same graph without a new paid request.
 
-`RUN_ID` is a placeholder for the actual directory printed by `init`. Model calls may use your provider plan or billable account. `max_model_calls` counts **worker dispatches** recorded by the subprocess runner or native `claim --model-call`, not every internal model turn or the producer's own reasoning. Claude also accepts an inner turn limit; Codex is bounded by the worker timeout. These controls are not a universal dollar cap for model usage.
+`RUN_ID` is a placeholder for the actual directory printed by `start` or `init`; use its exact returned path if you are working in a subfolder. Model calls may use your provider plan or billable account. `max_model_calls` counts **worker dispatches** recorded by the subprocess runner or native `claim --model-call`, not every internal model turn or the producer's own reasoning. Claude also accepts an inner turn limit; Codex is bounded by the worker timeout. These controls are not a universal dollar cap for model usage.
 
 See the [CLI guide](docs/CLI.md) for leases, recovery, media reservations, and actual output submission. For visual blocking from a director plan:
 
 ```bash
-python3 -m storyforge export-plan runs/RUN_ID --output draft.props.json
+storyforge export-plan .storyforge/runs/RUN_ID --output draft.props.json
+storyforge preview --props draft.props.json
 ```
 
 This exports a labelled draft using starter environments. The editor must replace arbitrary environment choices and supply actual media before a production edit can pass.
@@ -160,19 +182,20 @@ References become a production specification. They do not automatically grant ri
 | Path | Purpose |
 | --- | --- |
 | [AGENTS.md](AGENTS.md), [CLAUDE.md](CLAUDE.md) | Producer instructions and host-specific routing |
-| [.codex/](.codex/), [.claude/](.claude/) | Native host configuration and worker definitions |
-| [storyforge/](storyforge/) | Python CLI, state store, task graph, contracts and provider adapters |
+| [.codex/](https://github.com/CodnanBaig/storyforge/tree/main/.codex), [.claude/](https://github.com/CodnanBaig/storyforge/tree/main/.claude) | Native host configuration and worker definitions |
+| [storyforge/](https://github.com/CodnanBaig/storyforge/tree/main/storyforge) | Python CLI, state store, task graph, contracts and provider adapters |
 | [agents/](agents/) | Canonical specialist role cards |
 | [renderer/](renderer/) | React, Remotion and Three.js scene library and export scripts |
 | [schemas/](schemas/) | Brief, task-result and caption interchange schemas |
 | [templates/](templates/), [examples/](examples/) | Editorial/production templates and example briefs |
-| [tests/](tests/) | Coordinator, transport, contract and recovery regression tests |
+| [tests/](https://github.com/CodnanBaig/storyforge/tree/main/tests) | Coordinator, transport, contract and recovery regression tests |
 | [docs/](docs/) | Architecture, production, editorial and operating guides |
 
 ### Documentation
 
 | Guide | Use it for |
 | --- | --- |
+| [Installation](docs/installation.md) | Install once, set up projects, upgrade, and resolve setup issues |
 | [Agent hosts](docs/agent-hosts.md) | Run the producer and workers in Codex or Claude Code |
 | [CLI](docs/CLI.md) | Commands, task leases, retries and media reservations |
 | [Architecture](docs/architecture.md) | Extend the pipeline, providers or scene library |
@@ -196,11 +219,17 @@ There is no automatic public uploader, scheduler, analytics scraper, or hosted d
 
 ## Development and verification
 
-From the repository root:
+Clone the source only if you want to change StoryForge itself. Use a virtual environment for an editable developer install:
 
 ```bash
+git clone https://github.com/CodnanBaig/storyforge.git
+cd storyforge
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -e .
 python3 -m unittest discover -s tests -v
 cd renderer
+npm ci
 npm run typecheck
 npm run bundle
 ```
@@ -213,7 +242,7 @@ npm run stills -- --props examples/demo-short.json --out previews/portrait --sca
 npm run stills -- --props examples/demo-long.json --out previews/landscape --scale 0.5
 ```
 
-The initial build's 72 Python tests exercised the state store, contracts, subprocess transports, media reservations, recovery and local media inspection. Provider tests used fakes or mocked HTTP; they consumed no generation credits. The eight reviewed PNGs verify representative stills, not narration, audio mixing, every animation frame or complete movie encoding. Full results and environment conditions are in the [workflow record](docs/VERIFICATION.md) and [renderer record](renderer/VERIFICATION.md).
+Automated checks cover the state store, contracts, subprocess transports, media reservations, recovery, local media inspection, package resources, and project setup. Provider tests use fakes or mocked HTTP; they consume no generation credits. The eight reviewed PNGs verify representative stills, not narration, audio mixing, every animation frame or complete movie encoding. Full results and environment conditions are in the [workflow record](docs/VERIFICATION.md) and [renderer record](renderer/VERIFICATION.md).
 
 When extending StoryForge, keep provider credentials out of the repository, preserve the standard-library Python core, and update a changed contract alongside its examples. Run focused tests for state, transport or validation changes. New visual work needs inspection in actual rendered frames before a complete export is accepted. See [architecture](docs/architecture.md) and [contributor instructions](AGENTS.md#maintaining-this-codebase).
 

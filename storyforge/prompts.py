@@ -5,12 +5,15 @@ from pathlib import Path
 
 from .pipeline import TASKS
 from .store import Run
-from .util import ROOT, write_json
+from .util import write_json
+from .workspace import run_resource_paths
 
 
 def task_prompt(run: Run, task_id: str, workspace: Path | None = None) -> str:
     context = run.context(task_id)
-    role_file = ROOT / "agents" / f"{task_id}.md"
+    paths = run_resource_paths(run.path)
+    toolkit = paths["toolkit"]
+    role_file = toolkit / "agents" / f"{task_id}.md"
     role = role_file.read_text(encoding="utf-8") if role_file.exists() else f"Complete the {TASKS[task_id].role} task using its output contract."
     wanted: set[str] = set()
     def visit(t: str) -> None:
@@ -70,10 +73,19 @@ handles that handoff, or invokes the built-in tts helper, before work resumes.
 {json.dumps(deps, ensure_ascii=False, indent=2)}
 
 ## Contract resources
-Project root: {ROOT}
-Interchange: {ROOT / 'schemas' / 'task-result.schema.json'}
-Semantic gates: {ROOT / 'docs' / 'contracts.md'}
-Renderer: {ROOT / 'renderer' / 'README.md'}
+PROJECT_ROOT: {paths['project']}
+TOOLKIT_ROOT: {toolkit}
+RENDERER_ROOT: {paths['renderer']}
+RUN_DIR: {run.path}
+Role card: {role_file}
+Interchange: {toolkit / 'schemas' / 'task-result.schema.json'}
+Semantic gates: {toolkit / 'docs' / 'contracts.md'}
+Renderer: {paths['renderer'] / 'README.md'}
+
+These paths are authoritative even when your current working directory differs.
+Use the installed storyforge command for state operations; never assume Python
+source lives inside TOOLKIT_ROOT. Do not install packages into the read-only
+Python installation. Integrate renderer changes into a project/run-owned copy.
 
 This run is {'an offline fixture; no actual production is allowed' if context['demo'] else 'a real production run; all checks require real evidence'}.
 """

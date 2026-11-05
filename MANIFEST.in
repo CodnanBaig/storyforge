@@ -1,0 +1,19 @@
+include pyproject.toml setup.py MANIFEST.in Makefile .gitignore
+include AGENTS.md CLAUDE.md README.md LICENSE THIRD_PARTY_NOTICES.md .env.example
+include .codex/config.toml
+graft .codex/agents
+graft .claude/agents
+graft agents
+graft schemas
+graft templates
+graft examples
+graft docs
+graft renderer
+graft scripts
+graft tests
+prune storyforge/_resources
+prune renderer/node_modules
+prune renderer/build
+prune renderer/dist
+prune renderer/out
+global-exclude BUILD_CONTRACT.md .DS_Store *.py[cod] *.sqlite3* *.pem *.key credentials*.json secrets*.json .npmrc .pypirc .netrc
