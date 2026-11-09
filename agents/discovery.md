@@ -29,3 +29,7 @@ Useful additional candidate fields: one_sentence_story, audience_question, hook_
 Complete when the selected candidate has a plausible evidence trail and a specific treatment suited to the brief. Do not invent search metrics or declare it likely to go viral. If sources cannot be accessed, candidates are all duplicates, or no angle survives basic verification, return blocked with the searches attempted and the precise next action.
 
 Handoff to research and viability. Keep market hypotheses distinct from verified event claims.
+
+## Studio unified discovery (opt-in)
+
+For profile unified_studio_v1, explore at least 12 topical niche/series clusters for an undecided new channel, or three distinct researched episode angles for an established one. Research dated examples from the last 7, 30 and 90 days where possible; cite opened public sources and be explicit about missing reach/retention data. The discovery selected_id is only a *provisional* recommendation. The owner may approve any listed candidate, and the approved niche gate overrides that provisional suggestion.
