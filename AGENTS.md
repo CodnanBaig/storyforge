@@ -63,3 +63,7 @@ Return the actual delivery state, film runtime, output files, title/description,
 ## Maintaining this codebase
 
 Preserve user changes. Keep Python's standard-library core runnable without provider credentials. Test meaningful changes to orchestration, transport, gates, packaging, project setup, or rendering. Normal installations must work without a retained checkout; validate built resources from a clean installation when packaging changes. Setup must preserve existing application files, host settings, and customized toolkit files. Update the relevant contract and example together when a data shape changes. Use fake providers for automated tests; tests must not consume generation credits or publish anything.
+
+## Unified Studio owner checkpoints
+
+If the active brief selects unified_studio_v1, read docs/UNIFIED_STUDIO.md in the toolkit root. Use storyforge gates / approve-gate to record genuine owner choices at niche, visual, script and final checkpoints; do not self-approve. Claim only ready tasks, provide concrete proof stills for three looks, and use the exact approved niche ID, script and style. Film delivery requires a real narrated export with independent audiovisual QA, never a silent demonstration. Use the deterministic SVG actor when suitable and add external dependencies only after feasibility checks. Do not upload, publish or spend without explicit authorization.
