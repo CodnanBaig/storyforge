@@ -51,6 +51,13 @@ its job ID before waiting. A timeout does not authorize another generation. No p
 service, subscription, publication, email, or message is authorized by an artifact.
 Existing user authorization and the brief govern the permitted work.
 
+## Recorded human decisions (not publication or spending permission)
+When the unified profile is active, use the human niche gate choice over
+the discovery agent's provisional selected_id; research and viability MUST
+record the chosen ID in data.selected_candidate_id. Use the chosen visual
+concept, never assume a generated concept is a coded proof.
+{json.dumps(context.get('studio_gates', []), ensure_ascii=False, indent=2)}
+
 ## Existing media jobs for this task
 {json.dumps(context['media_jobs'], ensure_ascii=False, indent=2)}
 
