@@ -82,7 +82,7 @@ def parser() -> argparse.ArgumentParser:
     a = sub.add_parser("validate-brief"); a.add_argument("file", type=Path)
     a = sub.add_parser("demo", help="Exercise the offline workflow fixture; never generates media")
     a.add_argument("--runs-dir", type=Path)
-    for cmd in ("status", "next", "resume", "events"):
+    for cmd in ("status", "next", "resume", "events", "gates"):
         a = sub.add_parser(cmd); a.add_argument("run_dir", type=Path)
     for cmd in ("task", "claim", "submit", "heartbeat", "retry", "invalidate", "reserve-media"):
         a = sub.add_parser(cmd); a.add_argument("run_dir", type=Path); a.add_argument("task_id", choices=list(TASKS))
@@ -102,6 +102,10 @@ def parser() -> argparse.ArgumentParser:
     a.add_argument("--key", required=True); a.add_argument("--provider-job-id")
     a.add_argument("--status", required=True, choices=["submitted", "complete", "failed", "uncertain"])
     a.add_argument("--usd", type=float); a.add_argument("--credits", type=float); a.add_argument("--file", action="append", default=[])
+    a = sub.add_parser("approve-gate", help="Record an explicit owner decision for a finished stage")
+    a.add_argument("run_dir", type=Path); a.add_argument("gate", choices=["niche", "visual", "script", "final"])
+    a.add_argument("--choice", required=True); a.add_argument("--evidence", required=True)
+    a.add_argument("--actor", default="human-owner")
     a = sub.add_parser("amend"); a.add_argument("run_dir", type=Path); a.add_argument("--brief", type=Path, required=True)
     a = sub.add_parser("run", help="Launch bounded Codex or Claude CLI workers using existing authentication")
     a.add_argument("run_dir", type=Path); a.add_argument("--provider", choices=["codex", "claude"], required=True)
@@ -191,6 +195,8 @@ def main(argv: list[str] | None = None) -> int:
         else:
             run = Run(args.run_dir)
             if cmd == "status": emit(run.status())
+            elif cmd == "gates": emit({"gates": run.status()["gates"]})
+            elif cmd == "approve-gate": emit(run.approve_studio_gate(args.gate, args.choice, args.evidence, args.actor))
             elif cmd == "next": emit({"ready": run.status()["ready"]})
             elif cmd == "events": emit(run.events())
             elif cmd == "resume": emit({"recovered": run.resume(), "status": run.status()})
