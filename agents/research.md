@@ -29,3 +29,7 @@ Save detailed notes separately and list them in files. Do not include long copie
 Complete when all planned narrative beats have support or explicit uncertainty. Missing key evidence, an unresolvable contradiction in the central premise, or an unsupported allegation blocks the task. Do not upgrade “reported” to “confirmed” for dramatic effect.
 
 Handoff to script and independent fact checking. A source list alone is not a fact check.
+
+## Approved niche selection (opt-in)
+
+Use the approved human niche gate choice from the current task packet as authoritative, even if the discovery selected_id is different. Record that choice in data.selected_candidate_id. Research the user's selected candidate, not the scout's provisional favorite.
