@@ -23,7 +23,7 @@ const Scene: React.FC<{scene: SceneSpec; manifest: Manifest; index: number; toke
   const headlineSize = portrait ? (scene.headline.length > 55 ? 69 : scene.headline.length > 38 ? 79 : 91) : (scene.headline.length > 55 ? 66 : 82);
   return <AbsoluteFill style={{backgroundColor: t.background, color: t.paper, fontFamily, overflow: 'hidden'}}>
     <div style={{position: 'absolute', left: portrait ? 0 : width * 0.28, top: portrait ? height * 0.2 : 0, width: canvasWidth, height: canvasHeight}}>
-      <Diorama scene={scene} tokens={t} character={character} width={canvasWidth} height={canvasHeight}/>
+      <Diorama scene={scene} tokens={t} character={scene.actor_2d ? undefined : character} width={canvasWidth} height={canvasHeight}/>
       {scene.actor_2d && <Actor2D plan={scene.actor_2d} durationInFrames={scene.duration_in_frames}
         coat={character?.coat ?? t.teal} skin={character?.skin ?? t.paper}
         trousers={character?.trousers ?? t.dark} width={canvasWidth} height={canvasHeight}/>
