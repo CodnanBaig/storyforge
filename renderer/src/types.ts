@@ -1,3 +1,4 @@
+import type {Actor2DPlan} from './scene/Actor2D';
 export type Vec3 = [number, number, number];
 export type Template = 'lighthouse-coast' | 'archive-room' | 'signal-chamber' | 'forest-path';
 export type CameraSize = 'wide' | 'medium' | 'detail';
@@ -29,6 +30,8 @@ export interface SceneSpec {
   camera: CameraSize;
   seed: number;
   image_asset_id?: string;
+  /** Optional frame-deterministic 2D puppet, independent of the 3D scene. */
+  actor_2d?: Actor2DPlan;
 }
 export interface Caption {
   text: string;
