@@ -1,0 +1,98 @@
+{
+  "manifest": {
+    "schema_version": "1.0",
+    "project_id": "silent-technical-demo",
+    "title": "The last light",
+    "demo": true,
+    "format": {
+      "width": 1080,
+      "height": 1920,
+      "fps": 30
+    },
+    "style_id": "midnight-dossier",
+    "characters": [
+      {
+        "id": "explorer",
+        "name": "The keeper",
+        "coat": "#638C82",
+        "skin": "#C6AD8C",
+        "trousers": "#203848",
+        "scale": 1
+      }
+    ],
+    "assets": [],
+    "scenes": [
+      {
+        "id": "arrival",
+        "template": "lighthouse-coast",
+        "duration_in_frames": 330,
+        "eyebrow": "01 / THE ARRIVAL",
+        "headline": "One light.\nAn empty island.",
+        "body": "A fictional mystery, built entirely with procedural 3D.",
+        "character_id": "explorer",
+        "camera": "wide",
+        "seed": 11,
+        "actor_2d": {
+          "action": "walk",
+          "x_from": 0.12,
+          "x_to": 0.6,
+          "y": 0.75,
+          "scale": 1,
+          "facing": 1
+        }
+      },
+      {
+        "id": "archive",
+        "template": "archive-room",
+        "duration_in_frames": 330,
+        "eyebrow": "02 / THE RECORD",
+        "headline": "The logbook\nstops here.",
+        "body": "Objects, light and camera movement carry the scene.",
+        "character_id": "explorer",
+        "camera": "medium",
+        "seed": 29,
+        "actor_2d": {
+          "action": "point",
+          "x_from": 0.54,
+          "x_to": 0.54,
+          "y": 0.75,
+          "scale": 1,
+          "facing": 1
+        }
+      },
+      {
+        "id": "signal",
+        "template": "signal-chamber",
+        "duration_in_frames": 330,
+        "eyebrow": "03 / THE SIGNAL",
+        "headline": "Someone was\nstill listening.",
+        "body": "A reusable visual language. A different story every time.",
+        "character_id": "explorer",
+        "camera": "wide",
+        "seed": 43,
+        "actor_2d": {
+          "action": "react",
+          "x_from": 0.5,
+          "x_to": 0.5,
+          "y": 0.75,
+          "scale": 1,
+          "facing": -1
+        }
+      },
+      {
+        "id": "path",
+        "template": "forest-path",
+        "duration_in_frames": 360,
+        "eyebrow": "04 / THE SEARCH",
+        "headline": "Follow the\nlast light.",
+        "body": "Silent renderer demonstration. No factual claims.",
+        "character_id": "explorer",
+        "camera": "wide",
+        "seed": 67
+      }
+    ],
+    "narration": null,
+    "music": null,
+    "captions": []
+  }
+}
