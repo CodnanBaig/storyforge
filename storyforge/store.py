@@ -138,20 +138,45 @@ class Run:
                     raise StateError(f"Completed artifact changed: {relative}. Invalidate {task_id} and its dependents before resubmitting.")
 
     def _input_hash(self, c: sqlite3.Connection, rows: dict[str, dict], task_id: str) -> str:
+        from .studio_gates import enabled, TASK_GATES, status as studio_status
+        decision = None
+        if enabled(self._meta(c, "brief")) and task_id in TASK_GATES:
+            gate = TASK_GATES[task_id]
+            decision = next((g["choice"] for g in studio_status(c, rows, self.path, self._meta(c, "brief"))
+                             if g["gate"] == gate and g["status"] == "approved"), None)
         return digest({"brief": self._meta(c, "brief_hash"), "contract": "1.0",
-                       "dependencies": {d: rows[d]["artifact_hash"] for d in TASKS[task_id].needs}})
+                       "dependencies": {d: rows[d]["artifact_hash"] for d in TASKS[task_id].needs},
+                       **({"human_selection": decision} if decision is not None else {})})
 
     def status(self) -> dict:
         with self.transaction() as c:
             rows = self._rows(c)
+            self._audit(c, rows)
             jobs = [dict(j) for j in c.execute("SELECT * FROM media_jobs ORDER BY created")]
             counts = {s: sum(v["status"] == s for v in rows.values()) for s in ("pending", "running", "complete", "blocked", "failed")}
+            from .studio_gates import status as studio_status, TASK_GATES
+            gates = studio_status(c, rows, self.path, self._meta(c, "brief"))
+            gated = {task for task, gate in TASK_GATES.items()
+                     if any(g["gate"] == gate and g["status"] != "approved" for g in gates)}
+            ready = [task for task in ready_tasks({k: v["status"] for k, v in rows.items()}) if task not in gated]
+            packaged = rows["package"]["status"] == "complete" and not self._meta(c, "demo")
+            finished = packaged and not any(g["gate"] == "final" and g["status"] != "approved" for g in gates)
             return {"run_id": self._meta(c, "run_id"), "path": str(self.path), "demo": self._meta(c, "demo"),
-                    "counts": counts, "ready": ready_tasks({k: v["status"] for k, v in rows.items()}),
+                    "counts": counts, "ready": ready, "gates": gates, "packaged": packaged,
                     "worker_calls": self._meta(c, "worker_calls"), "budget": self._meta(c, "brief")["budget"],
                     "tasks": [{k: v[k] for k in ("id", "status", "attempts", "owner", "lease_until", "error")} for v in rows.values()],
                     "media_jobs": [{k: j[k] for k in ("job_key", "task_id", "provider", "status", "provider_job_id", "estimated_usd", "estimated_credits", "actual_usd", "actual_credits")} for j in jobs],
-                    "delivered": rows["package"]["status"] == "complete" and not self._meta(c, "demo")}
+                    "delivered": finished}
+
+    def approve_studio_gate(self, gate: str, choice: str, evidence: str, actor: str = "human-owner") -> dict:
+        from .studio_gates import approve
+        with self.transaction() as c:
+            rows = self._rows(c)
+            self._audit(c, rows)
+            result = approve(c, rows, self.path, self._meta(c, "brief"), gate, choice, evidence, actor)
+            self._event(c, result["source_task"], "human_gate_approved",
+                        {"gate": gate, "choice": choice, "source_hash": result["source_hash"], "actor": actor})
+            return result
 
     def context(self, task_id: str) -> dict:
         if task_id not in TASKS: raise StateError(f"Unknown task {task_id}")
@@ -160,9 +185,11 @@ class Run:
             self._audit(c, rows)
             media_jobs = [{**dict(job), "files": json.loads(job["files"])} for job in c.execute(
                 "SELECT * FROM media_jobs WHERE task_id=? ORDER BY created, job_key", (task_id,))]
+            from .studio_gates import status as studio_status
             return {"run_id": self._meta(c, "run_id"), "run_dir": str(self.path), "demo": self._meta(c, "demo"),
                     "brief": self._meta(c, "brief"), "task_id": task_id, "task": rows[task_id],
-                    "dependencies": self._outputs(rows), "media_jobs": media_jobs}
+                    "dependencies": self._outputs(rows), "media_jobs": media_jobs,
+                    "studio_gates": studio_status(c, rows, self.path, self._meta(c, "brief"))}
 
     def claim(self, task_id: str, owner: str, *, lease_seconds: int = 1200, model_call: bool = False) -> dict:
         if task_id not in TASKS: raise StateError(f"Unknown task {task_id}")
@@ -173,6 +200,8 @@ class Run:
             self._audit(c, rows)
             ready = ready_tasks({k: v["status"] for k, v in rows.items()})
             if task_id not in ready: raise StateError(f"Task {task_id} is not ready; ready tasks: {', '.join(ready) or 'none'}")
+            from .studio_gates import guard
+            guard(c, rows, self.path, self._meta(c, "brief"), task_id)
             brief = self._meta(c, "brief")
             max_attempts = 1 + brief["budget"]["max_retries_per_task"]
             if rows[task_id]["attempts"] >= max_attempts: raise StateError(f"Retry budget exhausted for {task_id}")
@@ -221,6 +250,13 @@ class Run:
                     e = validate_task(task_id, result, self._meta(c, "brief"), self._outputs(rows), self.path, demo=self._meta(c, "demo"))
                 except (TypeError, KeyError, IndexError, AttributeError, ValueError) as ex:
                     e = [f"Malformed task data: {type(ex).__name__}: {ex}"]
+            if not e and task_id in {"research", "viability"} and result["status"] == "complete":
+                from .studio_gates import enabled, status as studio_status
+                brief = self._meta(c, "brief")
+                if enabled(brief):
+                    chosen = next(g["choice"] for g in studio_status(c, rows, self.path, brief) if g["gate"] == "niche")
+                    if result.get("data", {}).get("selected_candidate_id") != chosen:
+                        e.append("data.selected_candidate_id must equal the human-approved niche choice")
             if e:
                 c.execute("UPDATE tasks SET status='blocked', error=?,token=NULL,lease_until=NULL,updated=? WHERE id=?", (canonical(e), now(), task_id))
                 self._event(c, task_id, "validation_failed", e)
@@ -272,6 +308,8 @@ class Run:
         selected = descendants(task_id)
         if not reason.strip(): raise StateError("Invalidation requires a reason")
         with self.transaction() as c:
+            from .studio_gates import revoke
+            revoke(c, selected)
             # Revoke running leases. Late workers cannot submit over the new state.
             for task in selected:
                 c.execute("UPDATE tasks SET status='pending',owner=NULL,token=NULL,lease_until=NULL,input_hash=NULL,artifact=NULL,artifact_hash=NULL,error=NULL,updated=? WHERE id=?", (now(), task))
@@ -286,6 +324,8 @@ class Run:
             c.execute("UPDATE meta SET value=? WHERE key='brief'", (canonical(brief),))
             c.execute("UPDATE meta SET value=? WHERE key='brief_hash'", (canonical(digest(brief)),))
             c.execute("UPDATE tasks SET status='pending',owner=NULL,token=NULL,lease_until=NULL,input_hash=NULL,artifact=NULL,artifact_hash=NULL,error=NULL,updated=?", (now(),))
+            from .studio_gates import revoke
+            revoke(c, set(TASKS))
             self._event(c, None, "brief_amended", {"brief_hash": digest(brief), "note": "Attempts and usage retained"})
 
     def reserve_media(self, task_id: str, token: str, *, job_key: str, provider: str, request: dict,

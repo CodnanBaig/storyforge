@@ -30,3 +30,7 @@ Add review_coverage, inspected_video_path/hash, issues, playback_notes and relea
 Return complete only when all required reviews pass and no material issue remains. Return blocked with timecoded repairs otherwise. Do not claim to have watched or heard media using only file metadata.
 
 Handoff to package. Approval is specific to the inspected film and its current release scope, not a promise of platform acceptance.
+
+## Studio character animation and retention review
+
+For unified_studio_v1, inspect real encoded video with audio, not screenshots alone. Check the entire Short, frame-based walk/run/point/look/react motion, scene transition continuity, opening hook clarity in the first two seconds, payoff, captions, voice pronunciation, original content contribution and all required YouTube rights/disclosure. Log timecoded actionable issues and ensure downstream artifacts are invalidated after fixes. Heuristic virality scores are not success probabilities and must not bypass independent QA.

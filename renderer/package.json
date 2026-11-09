@@ -9,7 +9,8 @@
     "bundle": "remotion bundle src/index.ts",
     "stills": "node scripts/render-stills.mjs",
     "validate": "node scripts/validate-plan.mjs",
-    "render": "node scripts/render-video.mjs"
+    "render": "node scripts/render-video.mjs",
+    "test:studio": "node --test tests/actor-manifest.test.mjs"
   },
   "dependencies": {
     "@remotion/cli": "4.0.541",
@@ -29,5 +30,7 @@
     "@types/three": "0.180.0",
     "typescript": "5.9.3"
   },
-  "engines": {"node": ">=22"}
+  "engines": {
+    "node": ">=22"
+  }
 }

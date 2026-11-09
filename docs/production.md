@@ -66,3 +66,7 @@ Technical checks inspect the encoded duration, ratio, FPS, pixel format and audi
 Draft audience-facing metadata in the edit stage, before QA. The final packager assembles the exact reviewed title, description, credits and thumbnail; it cannot introduce a new claim after that review.
 
 Deliver the MP4, captions, approved script, claim/source ledger, credits/rights notes, metadata, QA reports and an editable project with its local assets and lockfile. Distinguish `private_preview` from commercially cleared material. A completed package is prepared for an authorized upload; it is not evidence of an upload or platform approval.
+
+## Studio's deterministic SVG actor
+
+An optional scene.actor_2d field accepts action (idle, walk, run, point, look, react or crouch), x_from and x_to (0..1), y (0..1), scale (0.2..2), and facing (-1 or 1). renderer/src/scene/Actor2D.tsx is a starter rig entirely in React SVG/Remotion: output is derived from a frame index so random-access rendering is repeatable. It is not an automatic animation studio. Asset builders can implement new rig appearances behind the same action contract, and the independent reviewer must inspect actual motion after integration.

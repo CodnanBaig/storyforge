@@ -27,3 +27,7 @@ Use null for unknown scores. Evidence entries should include signal, source_url 
 Only a supported go advances scripting. Return blocked for revise/reject with a concrete replacement or revision. Empty market evidence cannot justify medium/high confidence. Low-confidence creative judgment must identify its missing observations and avoid false precision.
 
 Handoff to script, preflight and later analytics review.
+
+## Approved niche selection (opt-in)
+
+Use the exact owner-approved niche gate choice from the task packet. Record it in data.selected_candidate_id. Do not substitute the discovery agent's provisional selected_id.

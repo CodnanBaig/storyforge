@@ -4,6 +4,7 @@ import {AbsoluteFill, Img, interpolate, Sequence, staticFile, useCurrentFrame, u
 import type {Manifest, SceneSpec, StyleTokens, VideoProps} from './types';
 import {styles} from './styles';
 import {Diorama} from './scene/Diorama';
+import {Actor2D} from './scene/Actor2D';
 import {Fonts} from './Fonts';
 
 const fontFamily = '"Story Sans", Arial, sans-serif';
@@ -22,7 +23,10 @@ const Scene: React.FC<{scene: SceneSpec; manifest: Manifest; index: number; toke
   const headlineSize = portrait ? (scene.headline.length > 55 ? 69 : scene.headline.length > 38 ? 79 : 91) : (scene.headline.length > 55 ? 66 : 82);
   return <AbsoluteFill style={{backgroundColor: t.background, color: t.paper, fontFamily, overflow: 'hidden'}}>
     <div style={{position: 'absolute', left: portrait ? 0 : width * 0.28, top: portrait ? height * 0.2 : 0, width: canvasWidth, height: canvasHeight}}>
-      <Diorama scene={scene} tokens={t} character={character} width={canvasWidth} height={canvasHeight}/>
+      <Diorama scene={scene} tokens={t} character={scene.actor_2d ? undefined : character} width={canvasWidth} height={canvasHeight}/>
+      {scene.actor_2d && <Actor2D plan={scene.actor_2d} durationInFrames={scene.duration_in_frames}
+        coat={character?.coat ?? t.teal} skin={character?.skin ?? t.paper}
+        trousers={character?.trousers ?? t.dark} width={canvasWidth} height={canvasHeight}/>
     </div>
     <AbsoluteFill style={{pointerEvents: 'none', background: portrait
       ? `linear-gradient(180deg, ${t.background} 5%, transparent 35%, transparent 73%, ${t.background} 94%)`

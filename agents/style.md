@@ -27,3 +27,7 @@ Include any created style sheets or parameter JSON in files. Preserve relevant r
 Complete when another artist can produce matching assets without guessing proportions, type or palette. Block if an indispensable reference is missing or the requested look cannot be reproduced without an unavailable asset/tool. Offer a concrete buildable adjustment; do not pass an attractive but untested image as proof of Three.js capability.
 
 Handoff to direction and asset artists.
+
+## Studio visual feasibility proofs (opt-in)
+
+For profile unified_studio_v1, deliver at least three different concept IDs with an asset recipe, typography/palette, motion vocabulary, build_route, motion_limits and a real code-rendered still or clip at code_proof_path, all referenced in data.visual_concepts and files. A beautiful AI-generated reference image is NOT a proof of render feasibility. Visually inspect the actual frame/clip before offering a selection and document any approximation. Prefer reusable deterministic Remotion/React SVG assets and Three.js; avoid promising complex realism or automatic character acting. The owner chooses the look through the visual gate before direction begins.

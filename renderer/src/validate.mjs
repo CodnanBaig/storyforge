@@ -72,6 +72,18 @@ export function validateManifest(value) {
     check(Number.isInteger(s.seed), `scenes[${i}].seed must be an integer`);
     if (s.character_id !== undefined) check(characterIds.has(s.character_id), `scenes[${i}] references an unknown character`);
     if (s.image_asset_id !== undefined) requireAsset(s.image_asset_id, 'image', `scenes[${i}].image_asset_id`);
+    if (s.actor_2d !== undefined) {
+      const a = s.actor_2d;
+      check(object(a), `scenes[${i}].actor_2d must be an object`);
+      if (object(a)) {
+        check(['idle','walk','run','point','look','react','crouch'].includes(a.action), `scenes[${i}].actor_2d.action is unknown`);
+        for (const key of ['x_from', 'x_to', 'y'])
+          check(finite(a[key]) && a[key] >= 0 && a[key] <= 1, `scenes[${i}].actor_2d.${key} must be 0..1`);
+        check(finite(a.scale) && a.scale >= 0.2 && a.scale <= 2, `scenes[${i}].actor_2d.scale must be 0.2..2`);
+        if (a.facing !== undefined)
+          check(a.facing === -1 || a.facing === 1, `scenes[${i}].actor_2d.facing must be -1 or 1`);
+      }
+    }
   });
   const totalFrames = scenes.reduce((sum, s) => sum + (s?.duration_in_frames ?? 0), 0);
   const timelineSeconds = totalFrames / f.fps;

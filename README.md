@@ -257,3 +257,7 @@ When extending StoryForge, keep provider credentials out of the repository, pres
 ## License
 
 Original toolkit code is provided under the [MIT license](LICENSE). Dependencies and media keep their own licenses; see [third-party notices](THIRD_PARTY_NOTICES.md) and [official source notes](docs/SOURCES.md).
+
+## StoryForge Studio — one upgraded workflow
+
+The opt-in Studio profile unifies StoryForge's durable 16-stage pipeline with Codex Shorts Studio's sourced trend scouting, three code-rendered look proofs, hard human selection checkpoints, reusable 2D puppet actions and final film approval. See [Unified Studio workflow](docs/UNIFIED_STUDIO.md). Activate it by setting brief constraints.workflow_profile to unified_studio_v1. Older briefs keep their original behavior. This upgrade does not itself include paid services or a completed narrated video; Codex and available tools still perform the actual work.
