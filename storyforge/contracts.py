@@ -208,6 +208,28 @@ def validate_task(task: str, r: dict, brief: dict, outputs: dict[str, dict], run
         if isinstance(palette, dict):
             for value in palette.values():
                 if not isinstance(value, str) or not re.fullmatch(r"#[0-9a-fA-F]{6}", value): e.append("Palette values must be #RRGGBB")
+        if not demo and brief.get("constraints", {}).get("workflow_profile") == "unified_studio_v1":
+            concepts = need("visual_concepts", list)
+            if isinstance(concepts, list):
+                ids = []
+                for i, concept in enumerate(concepts):
+                    if not isinstance(concept, dict):
+                        e.append(f"visual_concepts[{i}] must be an object"); continue
+                    ids.append(concept.get("id"))
+                    if not all(text(concept.get(k)) for k in ("id", "build_route", "motion_limits", "code_proof_path")):
+                        e.append(f"visual_concepts[{i}] needs id, build_route, motion_limits and code_proof_path")
+                    proof = concept.get("code_proof_path")
+                    if not text(proof) or proof not in r["files"]:
+                        e.append(f"visual_concepts[{i}] code proof must be declared in files")
+                    else:
+                        try:
+                            proof_path = safe_path(run_dir, proof)
+                            if proof_path.suffix.lower() not in {".png", ".webp", ".mp4", ".gif"} or proof_path.stat().st_size < 100:
+                                e.append(f"visual_concepts[{i}] requires a nontrivial code-rendered image or clip")
+                        except (OSError, ValueError) as ex:
+                            e.append(f"Code proof missing/unsafe: {ex}")
+                if len(concepts) < 3 or len(set(ids)) != len(ids):
+                    e.append("Unified Studio requires three distinct concepts with actual render proofs")
     elif task == "script":
         narration = need("narration")
         hooks = need("hook_candidates", list)
